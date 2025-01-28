@@ -2,25 +2,28 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { conn } from '@/lib/db';
 import { Company } from '@/lib/model/Company';
+import bcrypt from 'bcrypt';
 
 export async function POST(request) {
-    
     try {
         await mongoose.connect(conn);
         const data = await request.json();
+
+        // Declare hashedPassword
+        const hashedPassword = bcrypt.hashSync(data.password, 10);
+
         const newCompany = new Company({
             name: data.name,
-            password: data.password,
+            password: hashedPassword,
         });
 
         const savedCompany = await newCompany.save();
-        
+
         return NextResponse.json({ result: savedCompany });
 
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
 }
 
 export async function GET() {
