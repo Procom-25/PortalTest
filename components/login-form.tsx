@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AlertDestructive } from "@/components/Alert";
+import { authenticateCompany } from "@/lib/auth"
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function LoginForm({
-  
+
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
@@ -19,9 +20,9 @@ export function LoginForm({
   const router = useRouter();
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === "example@mail.com" && password === "password") {
+    if (await authenticateCompany(email, password)) {
       router.push("/dashboard");
     } else {
       setError("Invalid email or password");
@@ -52,7 +53,7 @@ export function LoginForm({
             </a>
           </div>
           <Input id="password" type="password" onChange={(e) => setPassword(e.target.value)} required />
-          
+
         </div>
         {error && <AlertDestructive message={error} />}
         <Button type="submit" className="w-full">
@@ -60,4 +61,5 @@ export function LoginForm({
         </Button>
       </div>
     </form>
-  )}
+  )
+}
