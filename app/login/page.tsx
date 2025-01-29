@@ -1,4 +1,5 @@
-import { LoginForm } from "@/components/login-form"
+import Image from "next/image";
+import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
   return (
@@ -9,20 +10,21 @@ export default function LoginPage() {
             Procom<span>&#39;</span>25
           </div>
           <div className="font-bold text-4xl sm:text-4xl">
-            Welcome to the Job Portal
+            Job Portal
           </div>
-            <div className="w-full max-w-xs mt-8 text-left">
+          <div className="w-full max-w-xs mt-8 text-left">
             <LoginForm />
-            </div>
+          </div>
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
-        <img
-          src="/placeholder.svg"
+        <Image
+          src="/11.jpg" 
           alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          fill 
+          className="object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
     </div>
-  )
+  );
 }

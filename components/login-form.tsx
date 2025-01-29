@@ -22,25 +22,31 @@ export function LoginForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (await authenticateCompany(email, password)) {
-      router.push("/dashboard");
+    
+    // Call authenticateCompany to check credentials
+    const authenticated = await authenticateCompany(email, password);
+    
+    if (authenticated) {
+        // Redirect to dashboard if authenticated
+        router.push(`/dashboard?name=${encodeURIComponent(email)}`);
     } else {
-      setError("Invalid email or password");
+        // Show error message if authentication fails
+        setError("Invalid email or password");
     }
-  };
+};
+
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
-          Enter your email below to login to your account
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" onChange={(e) => setEmail(e.target.value)} required />
+          <Label htmlFor="email">Company Name</Label>
+          <Input id="name" type="name" placeholder="Fast ltd" onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="grid gap-2">
           <div className="flex items-center">
