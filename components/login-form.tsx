@@ -19,6 +19,7 @@ export function LoginForm({
   const router = useRouter();
   const [error, setError] = useState("");
 
+  // function to test form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email === "example@mail.com" && password === "password") {
