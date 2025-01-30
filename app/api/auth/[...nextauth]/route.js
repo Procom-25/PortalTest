@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import mongoose from "mongoose";
-import { conn } from "@/lib/db"; // Database connection
-import { Company } from "@/lib/model/Company"; // Mongoose model
+import { conn } from "@/lib/db";
+import { Company } from "@/lib/model/Company";
 import bcrypt from "bcrypt";
 
 export const authOptions = {
@@ -18,7 +18,7 @@ export const authOptions = {
           throw new Error("Both fields are required");
         }
 
-        await mongoose.connect(conn); // Ensure DB is connected
+        await mongoose.connect(conn);
         const company = await Company.findOne({ name: credentials.name });
 
         if (!company) {
@@ -30,46 +30,45 @@ export const authOptions = {
           throw new Error("Invalid password");
         }
 
-        return { id: company._id.toString(), name: company.name }; // Return user object
+        return { id: company._id.toString(), name: company.name };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.companyName = user.name; // Store user info in JWT
-        token.id = user.id; // Optional: Add user ID to token
+        token.companyName = user.name;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = { name: token.companyName, id: token.id }; // Store info in session
+      session.user = { name: token.companyName, id: token.id };
       return session;
     },
   },
   pages: {
-    signIn: "/login", // Customize the sign-in page
+    signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET, // Set a secret for JWT signing
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt", // Use JWT-based sessions
-    maxAge: 30 * 24 * 60 * 60, // Session expires after 30 days
-    updateAge: 24 * 60 * 60, // Refresh session token every 24 hours
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`, // Cookie name (you can customize this)
+      name: `next-auth.session-token`,
       options: {
-        httpOnly: true, // Make sure the cookie is not accessible via JS
-        secure: process.env.NODE_ENV === "production", // Only secure in production
-        sameSite: "lax", // CSRF protection
-        path: "/", // The cookie is available throughout the site
-        maxAge: 30 * 24 * 60 * 60, // Session cookie lifespan (same as `maxAge` in session)
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60,
       },
     },
   },
 };
 
-// Export handler for API routes
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
