@@ -1,3 +1,5 @@
+// React.use
+'use client'
 import type * as React from "react"
 import { Home, Briefcase, FileText, Settings, LogOut} from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -5,6 +7,8 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTitle } from "@/components/ui/dialog"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import {
   Sidebar,
@@ -73,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarRail />
       <SidebarFooter>
-        <Button variant="ghost" className="w-full justify-start">
+        <Button onClick ={() => signOut({callbackUrl: '/login'})}variant="ghost" className="w-full justify-start">
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </Button>
@@ -82,6 +86,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+
+{/* <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign Out</button> */}
 
 
 

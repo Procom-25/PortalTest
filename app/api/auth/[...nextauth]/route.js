@@ -5,6 +5,11 @@ import { conn } from "@/lib/db";
 import { Company } from "@/lib/model/Company";
 import bcrypt from "bcrypt";
 
+// Connect to MongoDB once when the server starts
+mongoose.connect(conn).catch((err) => {
+  console.error("Failed to connect to MongoDB:", err);
+});
+
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -15,22 +20,26 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials.name || !credentials.password) {
-          throw new Error("Both fields are required");
+          return null; // Return null if fields are missing
         }
 
-        await mongoose.connect(conn);
-        const company = await Company.findOne({ name: credentials.name });
+        try {
+          const company = await Company.findOne({ name: credentials.name });
 
-        if (!company) {
-          throw new Error("Company not found");
+          if (!company) {
+            return null; // Return null if company not found
+          }
+
+          const isMatch = await bcrypt.compare(credentials.password, company.password);
+          if (!isMatch) {
+            return null; // Return null if password is invalid
+          }
+
+          return { id: company._id.toString(), name: company.name };
+        } catch (error) {
+          console.error("Error during authorization:", error);
+          return null;
         }
-
-        const isMatch = await bcrypt.compare(credentials.password, company.password);
-        if (!isMatch) {
-          throw new Error("Invalid password");
-        }
-
-        return { id: company._id.toString(), name: company.name };
       },
     }),
   ],
@@ -50,11 +59,11 @@ export const authOptions = {
   pages: {
     signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your .env file
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-    updateAge: 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   cookies: {
     sessionToken: {
@@ -64,7 +73,7 @@ export const authOptions = {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 30 * 24 * 60 * 60,
+        maxAge: 30 * 24 * 60 * 60, // 30 days
       },
     },
   },
