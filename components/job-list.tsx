@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { Plus } from "lucide-react"
 import { AddJobForm } from "@/components/add-job-form"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { GradientButton } from "@/components/gradient-button"
+import { Label } from "@radix-ui/react-label"
 
 interface Resume {
   id: string
@@ -41,23 +42,51 @@ const initialJobs: Job[] = [
 ]
 
 export function JobList() {
-  const [jobs, setJobs] = useState<Job[]>(initialJobs)
+
+  const [jobs, setJobs] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
+
+  async function getJobs(companyName: string) {
+    try {
+      const response = await fetch(
+        `/api/jobs?${new URLSearchParams({ companyName })}`,
+        {
+          method: 'GET',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseBody = await response.json();
+
+      setJobs(responseBody["result"]);
+
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }
 
   const handleViewResumes = (job: Job) => {
     setSelectedJob(job)
   }
 
   const handleAddJob = (newJob: Omit<Job, "id" | "resumes">) => {
-    const jobToAdd: Job = {
-      ...newJob,
-      id: jobs.length + 1,
-      resumes: [],
-    }
-    setJobs([...jobs, jobToAdd])
-    setIsDialogOpen(false)
+    // const jobToAdd: Job = {
+    //   ...newJob,
+    //   id: jobs.length + 1,
+    //   resumes: [],
+    // }
+    // setJobs([...jobs, jobToAdd])
+    // setIsDialogOpen(false)
   }
+
+
+  useEffect(() => {
+    getJobs("company");
+  }, [])
 
   return (
     <div className="space-y-4">
@@ -87,19 +116,20 @@ export function JobList() {
         </Dialog>
       </div>
       <div className="border rounded-md">
-        <Table>
+        {jobs ? <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Job</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Deadline</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {jobs.map((job) => (
+            {jobs.length > 0 ? jobs.map((job) => (
               <TableRow key={job.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-s text-muted-foreground">#{job.id}</span>
+                    {/* <span className="font-mono text-s text-muted-foreground">#{job.id}</span> */}
                     <span className="text-base">{job.title}</span>
                   </div>
                 </TableCell>
@@ -108,12 +138,17 @@ export function JobList() {
                     {job.status}
                   </Badge>
                 </TableCell>
+                <TableCell className="font-medium text-gray">
+                  <div className="flex items-center gap-2 ">
+                    <span className="text-base">{job.applicationDeadline}</span>
+                  </div>
+                </TableCell>
                 <TableCell>
                   <div className="flex justify-end pr-4">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="secondary" onClick={() => handleViewResumes(job)}>
-                          View Resumes ({job.resumes.length})
+                          View Resumes {/* ({job.resumes.length}) */}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
@@ -121,9 +156,9 @@ export function JobList() {
                           <DialogTitle>Resumes for {job.title}</DialogTitle>
                         </DialogHeader>
                         <div className="mt-4">
-                          {job.resumes.length > 0 ? (
+                          {job.resume && job.resumes.length > 0 ? (
                             <ul className="space-y-2">
-                              {job.resumes.map((resume) => (
+                              {/* {job.resumes.map((resume) => (
                                 <li key={resume.id}>
                                   <a
                                     href={resume.resumeLink}
@@ -134,7 +169,7 @@ export function JobList() {
                                     {resume.applicantName}
                                   </a>
                                 </li>
-                              ))}
+                              ))} */}
                             </ul>
                           ) : (
                             <p>No resumes available for this job.</p>
@@ -145,11 +180,11 @@ export function JobList() {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : <p>No Jobs Added Placeholder</p>}
           </TableBody>
-        </Table>
+        </Table> : <p>Loading Placeholder</p>}
       </div>
-    </div>
+    </div >
   )
 }
 
