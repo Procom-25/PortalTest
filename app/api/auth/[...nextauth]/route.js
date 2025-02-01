@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import mongoose from "mongoose";
-import { conn } from "@/lib/db";
-import { Company } from "@/lib/model/Company";
+import { conn } from "@/lib/db/db";
+import { Company } from "@/lib/db/model/Company";
 import bcrypt from "bcrypt";
 
 // Connect to MongoDB once when the server starts

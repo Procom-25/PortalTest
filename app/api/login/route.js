@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { conn } from '@/lib/db';
-import { Company } from '@/lib/model/Company';
+import { conn } from '@/lib/db/db';
+import { Company } from '@/lib/db/model/Company';
 
 export async function POST(request) {
     try {
         // Establish DB connection
         await mongoose.connect(conn);
-        
+
         // Parse the incoming request body
         const { name, password } = await request.json();
 

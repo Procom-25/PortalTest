@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import { conn } from '@/lib/db';
+import { conn } from '@/lib/db/db';
 import { Job } from '../../../lib/model/Job';
 import { URL } from 'url';
 
