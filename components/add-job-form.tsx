@@ -1,40 +1,52 @@
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GradientButton } from "@/components/gradient-button"
-
-interface Job {
-  id: number
-  title: string
-  status: "Open" | "Closed"
-}
+import { useSession } from 'next-auth/react'
+import { Job } from "@/lib/models/Job"
 
 interface AddJobFormProps {
   onSubmit: (job: Job) => void
+  onClose: () => void
 }
 
-export function AddJobForm({ onSubmit }: AddJobFormProps) {
+export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
   const [title, setTitle] = useState("")
-  const [status, setStatus] = useState<"Open" | "Closed">("Open")
+  const [status, setStatus] = useState<"open" | "closed">("open")
+  const [description, setDescription] = useState("")
+  const [deadline, setDeadline] = useState(Date.now())
+  const company = useSession().data?.user?.name;
+
 
   const handleSubmit = (e: React.FormEvent) => {
+
+    // So that I dont have to type everytime
+    setTitle("newTitle")
+    setDeadline(Date.now())
+    setDescription("JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB ")
+
+
     e.preventDefault()
-    const newJob: Job = {
-      id: Math.floor(Math.random() * 10) + 1, 
-      title,
-      status,
+
+    if (company) { // If company is null for some reason
+      const newJob: Job = {
+        title,
+        company,
+        deadline,
+        description,
+        status,
+      }
+
+      onSubmit(newJob)
+      onClose()
     }
-    onSubmit(newJob)
-    setTitle("")
-    setStatus("Open")
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="title">Job Title</Label>
+        <Label htmlFor="title">Title</Label>
         <Input
           id="title"
           value={title}
@@ -44,24 +56,44 @@ export function AddJobForm({ onSubmit }: AddJobFormProps) {
         />
       </div>
       <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Input
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter job description"
+        />
+      </div>
+      {/* TODO Impliment date picker */}
+      <div className="space-y-2">
+        <Label htmlFor="deadline">Application Deadline</Label>
+        <Input
+          id="deadline"
+          value={deadline}
+          onChange={(e) => setDeadline(1234)}
+          placeholder="Enter application deadline"
+          required
+        />
+      </div>
+      <div className="space-y-2">
         <Label htmlFor="status">Status</Label>
-        <Select value={status} onValueChange={(value: "Open" | "Closed") => setStatus(value)}>
+        <Select value={status} onValueChange={(value: "open" | "closed") => setStatus(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select job status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Open">Open</SelectItem>
-            <SelectItem value="Closed">Closed</SelectItem>
+            <SelectItem value="open">Open</SelectItem>
+            <SelectItem value="closed">Closed</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <GradientButton
-          gradientFrom="from-[#199DDF]"
-          gradientTo="to-[#145BD5]"
-          hoverGradientFrom="from-[#199DDF]"
-          hoverGradientTo="to-[#145BD5]"
-        >
-          Add Job
+        gradientFrom="from-[#199DDF]"
+        gradientTo="to-[#145BD5]"
+        hoverGradientFrom="from-[#199DDF]"
+        hoverGradientTo="to-[#145BD5]"
+      >
+        Add Job
       </GradientButton>
     </form>
   )

@@ -8,7 +8,8 @@ import { Plus } from "lucide-react"
 import { AddJobForm } from "@/components/add-job-form"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { GradientButton } from "@/components/gradient-button"
-import { Label } from "@radix-ui/react-label"
+import { useSession } from 'next-auth/react'
+import { Job } from "@/lib/models/Job"
 
 interface Resume {
   id: string
@@ -16,43 +17,52 @@ interface Resume {
   resumeLink: string
 }
 
-interface Job {
-  id: number
-  title: string
-  status: "Open" | "Closed"
-  resumes: Resume[]
-}
-
-const initialJobs: Job[] = [
-  {
-    id: 1,
-    title: "Senior Software Engineer",
-    status: "Open",
-    resumes: [
-      { id: "r001", applicantName: "John Doe", resumeLink: "/resumes/john-doe.pdf" },
-      { id: "r002", applicantName: "Jane Smith", resumeLink: "/resumes/jane-smith.pdf" },
-    ],
-  },
-  {
-    id: 2,
-    title: "Devops Engineer",
-    status: "Closed",
-    resumes: [{ id: "r003", applicantName: "Alice Johnson", resumeLink: "/resumes/alice-johnson.pdf" }],
-  },
-]
-
 export function JobList() {
 
   const [jobs, setJobs] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
+  const company = useSession().data?.user?.name
 
-  async function getJobs(companyName: string) {
+  async function getJobs() {
+    try {
+
+      if (company) {
+        const response = await fetch(
+          `/api/jobs?${new URLSearchParams({ company })}`,
+          {
+            method: 'GET',
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const responseBody = await response.json();
+
+        setJobs(responseBody["result"]);
+      }
+
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }
+
+  const handleViewResumes = (job: Job) => {
+    setSelectedJob(job)
+  }
+
+  const handleAddJob = async (newJob: Job) => {
+
+    // console.log(JSON.stringify(newJob));
+
     try {
       const response = await fetch(
-        `/api/jobs?${new URLSearchParams({ companyName })}`,
+        `/api/jobs`,
         {
-          method: 'GET',
+          method: 'POST',
+          body: JSON.stringify(newJob),
         },
       );
 
@@ -69,23 +79,9 @@ export function JobList() {
     }
   }
 
-  const handleViewResumes = (job: Job) => {
-    setSelectedJob(job)
-  }
-
-  const handleAddJob = (newJob: Omit<Job, "id" | "resumes">) => {
-    // const jobToAdd: Job = {
-    //   ...newJob,
-    //   id: jobs.length + 1,
-    //   resumes: [],
-    // }
-    // setJobs([...jobs, jobToAdd])
-    // setIsDialogOpen(false)
-  }
-
 
   useEffect(() => {
-    getJobs("company");
+    getJobs();
   }, [])
 
   return (
@@ -111,7 +107,7 @@ export function JobList() {
             <DialogHeader>
               <DialogTitle>Add New Job</DialogTitle>
             </DialogHeader>
-            <AddJobForm onSubmit={handleAddJob} />
+            <AddJobForm onSubmit={handleAddJob} onClose={() => { setIsDialogOpen(false); getJobs() }} />
           </DialogContent>
         </Dialog>
       </div>
