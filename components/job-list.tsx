@@ -55,6 +55,8 @@ export function JobList() {
 
   const handleAddJob = async (newJob: Job) => {
 
+    console.log(JSON.stringify(newJob));
+
     try {
       const response = await fetch(
         `/api/jobs`,
@@ -154,7 +156,7 @@ export function JobList() {
                 </TableCell>
                 <TableCell className="font-medium text-gray">
                   <div className="flex items-center gap-2 ">
-                    <span className="text-base">{job.applicationDeadline}</span>
+                    {job.applicationDeadline}
                   </div>
                 </TableCell>
 

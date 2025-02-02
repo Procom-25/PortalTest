@@ -2,7 +2,7 @@
 export interface Job {
     title: string
     company: string
-    deadline: number
+    deadline: Date
     description: string
     status: "open" | "closed"
 }

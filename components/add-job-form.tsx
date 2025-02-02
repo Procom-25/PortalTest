@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GradientButton } from "@/components/gradient-button"
 import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
+import date from 'date-and-time'
 
 interface AddJobFormProps {
   onSubmit: (job: Job) => void
@@ -22,10 +22,6 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
 
     // So that I dont have to type everytime
-    setTitle("newTitle")
-    setDeadline(Date.now())
-    setDescription("JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB JOB ")
-
 
     e.preventDefault()
 
@@ -33,7 +29,7 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
       const newJob: Job = {
         title,
         company,
-        deadline,
+        deadline: new Date(deadline),
         description,
         status,
       }
@@ -62,6 +58,7 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter job description"
+          required
         />
       </div>
       {/* TODO Impliment date picker */}
@@ -69,23 +66,15 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
         <Label htmlFor="deadline">Application Deadline</Label>
         <Input
           id="deadline"
+          type="date"
           value={deadline}
-          onChange={(e) => setDeadline(1234)}
+          onChange={(e) => {
+            setDeadline((new Date(e.target.value)).getTime())
+            console.log(deadline);
+          }}
           placeholder="Enter application deadline"
           required
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select value={status} onValueChange={(value: "open" | "closed") => setStatus(value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select job status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
       <GradientButton
         gradientFrom="from-[#199DDF]"
