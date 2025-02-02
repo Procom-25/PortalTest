@@ -42,3 +42,25 @@ export async function GET(request) {
 
     return NextResponse.json({ result: jobs });
 }
+
+export async function DELETE(request) {
+    await mongoose.connect(conn);
+
+    const url = new URL(request.url);
+    const company = url.searchParams.get('company');
+    const title = url.searchParams.get('title');
+
+    if (!company || !title) {
+        return NextResponse.json({ error: 'Both company and title are required' }, { status: 400 });
+    }
+
+    const query = { company, title };
+
+    const deletionResult = await Job.deleteOne(query);
+
+    if (deletionResult.deletedCount === 0) {
+        return NextResponse.json({ message: 'No job found matching the criteria' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Job deleted successfully' }, { status: 200 });
+}
