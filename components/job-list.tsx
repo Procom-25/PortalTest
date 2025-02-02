@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { AddJobForm } from "@/components/add-job-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { GradientButton } from "@/components/gradient-button"
 import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
@@ -55,8 +55,6 @@ export function JobList() {
 
   const handleAddJob = async (newJob: Job) => {
 
-    // console.log(JSON.stringify(newJob));
-
     try {
       const response = await fetch(
         `/api/jobs`,
@@ -73,6 +71,26 @@ export function JobList() {
       const responseBody = await response.json();
 
       setJobs(responseBody["result"]);
+
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }
+
+  const handleDeleteJob = async (job: Job) => {
+    try {
+      const response = await fetch(
+        `/api/jobs?${new URLSearchParams({ company: job.company, title: job.title })}`,
+        {
+          method: 'DELETE',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      getJobs();
 
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -139,22 +157,25 @@ export function JobList() {
                     <span className="text-base">{job.applicationDeadline}</span>
                   </div>
                 </TableCell>
+
+                {/* View Resumes Button */}
                 <TableCell>
-                  <div className="flex justify-end pr-4">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="secondary" onClick={() => handleViewResumes(job)}>
-                          View Resumes {/* ({job.resumes.length}) */}
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Resumes for {job.title}</DialogTitle>
-                        </DialogHeader>
-                        <div className="mt-4">
-                          {job.resume && job.resumes.length > 0 ? (
-                            <ul className="space-y-2">
-                              {/* {job.resumes.map((resume) => (
+                  <div className="flex justify-end">
+                    <div className="flex justify-end pr-4">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="secondary" onClick={() => handleViewResumes(job)}>
+                            View Resumes {/* ({job.resumes.length}) */}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Resumes for {job.title}</DialogTitle>
+                          </DialogHeader>
+                          <div className="mt-4">
+                            {job.resume && job.resumes.length > 0 ? (
+                              <ul className="space-y-2">
+                                {/* {job.resumes.map((resume) => (
                                 <li key={resume.id}>
                                   <a
                                     href={resume.resumeLink}
@@ -166,13 +187,43 @@ export function JobList() {
                                   </a>
                                 </li>
                               ))} */}
-                            </ul>
-                          ) : (
-                            <p>No resumes available for this job.</p>
-                          )}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                              </ul>
+                            ) : (
+                              <p>No resumes available for this job.</p>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+
+                    {/* Delete Button */}
+                    <div className="flex justify-end pr-4">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          {/* TODO: Musab yahan delete button daldo koi acha sa dekh ke */}
+                          <Button variant="secondary" className="delete-button">
+                            <svg className="delete-icon" width="20" height="20" fill="none">
+                              <path d="M18 6V16.2C18 17.8802 18 18.7202 17.673 19.362C17.3854 19.9265 16.9265 20.3854 16.362 20.673C15.7202 21 14.8802 21 13.2 21H10.8C9.11984 21 8.27976 21 7.63803 20.673C7.07354 20.3854 6.6146 19.9265 6.32698 19.362C6 18.7202 6 17.8802 6 16.2V6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6"
+                                stroke="red" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Are you sure?</DialogTitle>
+                          </DialogHeader>
+                          <DialogFooter>
+                            {/*TODO: Make the yes button more prominent (darker color) */}
+                            <DialogTrigger asChild>
+                              <Button onClick={() => handleDeleteJob(job)} variant="secondary">Yes</Button>
+                            </DialogTrigger>
+                            <DialogTrigger asChild>
+                              <Button variant="secondary">No</Button>
+                            </DialogTrigger>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                 </TableCell>
               </TableRow>
