@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Briefcase } from "lucide-react"
-import type React from "react" // Import React
+import React, { useState, useEffect } from 'react';
+
 
 interface StatsCardProps {
   title: string
@@ -23,12 +24,48 @@ function StatsCard({ title, value, icon: Icon, className }: StatsCardProps) {
   )
 }
 
+
 export function DashboardStats() {
+  const [totalApplications, setTotalApplications] = useState('-'); // Initial state, can be any default value
+  const [totalJobRoles, setTotalJobRoles] = useState(0); // Initialize with 0, assuming we're fetching the actual count
+  const [isLoading, setIsLoading] = useState(true); // State to manage loading indicator
+  const [error, setError] = useState(null); // State to manage error
+
+  useEffect(() => {
+    const fetchJobsData = async () => {
+      try {
+        const response = await fetch('/api/jobs');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        console.log(data)
+
+        // Assuming the API returns an object with totalCount
+
+        setTotalJobRoles(data['result'].length);
+
+        // If the API returns an array of jobs
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error)
+        setTotalApplications('-')
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobsData();
+  }, []); // Empty dependency array means this effect runs once on mount
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-      <StatsCard className="shadow-lg shadow-[rgba(25,157,223,0.5)]" title="Total Applications" value="45,231" icon={FileText} />
-      <StatsCard className="shadow-lg shadow-[rgba(25,157,223,0.5)]" title="Total Job Roles" value="2,350" icon={Briefcase} />
+      <StatsCard className="shadow-lg shadow-[rgba(25,157,223,0.5)]" title="Total Applications" value={totalApplications} icon={FileText} />
+      <StatsCard className="shadow-lg shadow-[rgba(25,157,223,0.5)]" title="Total Job Roles" value={
+        isLoading ? 'Loading...' :
+          error ? '-' :
+            totalJobRoles.toString()
+      } icon={Briefcase} />
     </div>
-  )
+  );
 }
-
