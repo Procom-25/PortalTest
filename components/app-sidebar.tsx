@@ -1,7 +1,7 @@
 // React.use
 'use client'
 import type * as React from "react"
-import { Home, Briefcase, FileText, Settings, LogOut} from "lucide-react"
+import { Home, Briefcase, FileText, Settings, LogOut } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <div>
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-secondary text-sidebar-primary-foreground"> 
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-secondary text-sidebar-primary-foreground">
                   <Avatar className="px-1 h-8 w-6">
                     <AvatarImage src="https://www.procom.com.pk/Procom-Logo.png" alt="User Avatar" />
                     <AvatarFallback>Logo</AvatarFallback>
@@ -55,13 +55,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-          <Dialog>
+        <Dialog>
           <VisuallyHidden>
             <DialogTitle>Navigation Menu</DialogTitle>
           </VisuallyHidden>
-          </Dialog>
-        
-      {/* <SidebarContent> */}
+        </Dialog>
+
+        {/* <SidebarContent> */}
         <SidebarMenu>
           {data.navMain.map((item) => (
             <SidebarMenuItem key={item.title}>
@@ -76,18 +76,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarRail />
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <Button onClick ={() => signOut({callbackUrl: '/login'})}variant="ghost" className="w-full justify-start">
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </Button>
-      </SidebarFooter>
-      
+      </SidebarFooter> */}
+
     </Sidebar>
   )
 }
 
-{/* <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign Out</button> */}
+{/* <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign Out</button> */ }
 
 
 

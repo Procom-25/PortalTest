@@ -60,8 +60,8 @@ export function DashboardStats() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-      <StatsCard className="shadow-lg shadow-[rgba(25,157,223,0.5)]" title="Total Applications" value={totalApplications} icon={FileText} />
-      <StatsCard className="shadow-lg shadow-[rgba(25,157,223,0.5)]" title="Total Job Roles" value={
+      <StatsCard className="shadow-lg shadow-[#DDDDDD]" title="Total Applications" value={totalApplications} icon={FileText} />
+      <StatsCard className="shadow-lg shadow-[#DDDDDD]" title="Total Job Roles" value={
         isLoading ? 'Loading...' :
           error ? '-' :
             totalJobRoles.toString()
