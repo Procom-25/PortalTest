@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { GradientButton } from "@/components/gradient-button"
 import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
+import { EditJobForm } from "./edit-job-form"
 
 interface Resume {
   id: string
@@ -79,6 +80,32 @@ export function JobList() {
     }
   }
 
+  const handleUpdateJob = async (newJob: Job) => {
+
+    console.log(JSON.stringify(newJob));
+
+    try {
+      const response = await fetch(
+        `/api/jobs`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(newJob),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseBody = await response.json();
+
+      setJobs(responseBody["result"]);
+
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  }
+
   const handleDeleteJob = async (job: Job) => {
     try {
       const response = await fetch(
@@ -127,7 +154,7 @@ export function JobList() {
             <DialogHeader>
               <DialogTitle>Add New Job</DialogTitle>
             </DialogHeader>
-            <AddJobForm onSubmit={handleAddJob} onClose={() => { setIsDialogOpen(false); getJobs() }} />
+            <AddJobForm onSubmit={handleAddJob} onClose={() => { getJobs(); setIsDialogOpen(false); }} />
           </DialogContent>
         </Dialog>
       </div>
@@ -188,6 +215,22 @@ export function JobList() {
                       </Dialog>
                     </div>
 
+                    <div className="flex justify-end pr-4">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="secondary" className="">
+                            Edit
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit {job.title} Description</DialogTitle>
+                          </DialogHeader>
+                          <EditJobForm onClose={() => getJobs()} onUpdate={handleUpdateJob} job={job} />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+
                     {/* Delete Button */}
                     <div className="flex justify-end pr-4">
                       <Dialog>
@@ -199,12 +242,12 @@ export function JobList() {
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Are you sure?</DialogTitle>
+                            <DialogTitle >Delete the {job.title} job post? </DialogTitle>
                           </DialogHeader>
                           <DialogFooter>
                             {/*TODO: Make the yes button more prominent (darker color) */}
                             <DialogTrigger asChild>
-                              <Button onClick={() => handleDeleteJob(job)} variant="secondary">Yes</Button>
+                              <Button className="text-white bg-red-500 hover:bg-red-600" onClick={() => handleDeleteJob(job)} variant="secondary">Yes</Button>
                             </DialogTrigger>
                             <DialogTrigger asChild>
                               <Button variant="secondary">No</Button>

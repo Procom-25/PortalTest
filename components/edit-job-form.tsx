@@ -5,14 +5,14 @@ import { GradientButton } from "@/components/gradient-button"
 import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
 
-interface AddJobFormProps {
-  onSubmit: (job: Job) => void
+interface EditJobFormProps {
+  onUpdate: (job: Job) => void
   onClose: () => void
+  job: Job
 }
 
-export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+export function EditJobForm({ onUpdate, onClose, job }: EditJobFormProps) {
+  const [description, setDescription] = useState(job.description)
   const company = useSession().data?.user?.name;
 
 
@@ -24,12 +24,12 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
 
     if (company) { // If company is null for some reason
       const newJob: Job = {
-        title,
-        company,
+        title: job.title,
+        company: company,
         description,
       }
 
-      onSubmit(newJob)
+      onUpdate(newJob)
       onClose()
     }
   }
@@ -37,17 +37,7 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter job title"
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="description">Description </Label>
+        <Label htmlFor="description">Description</Label>
         <Input
           id="description"
           value={description}
@@ -62,7 +52,7 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
         hoverGradientFrom="from-[#199DDF]"
         hoverGradientTo="to-[#145BD5]"
       >
-        Add Job
+        Update Description
       </GradientButton>
     </form>
   )
