@@ -226,7 +226,7 @@ export function JobList() {
                           <DialogHeader>
                             <DialogTitle>Edit {job.title} Description</DialogTitle>
                           </DialogHeader>
-                          <EditJobForm onClose={() => getJobs()} onUpdate={handleUpdateJob} job={job} />
+                          <EditJobForm onClose={() => { getJobs(); setIsDialogOpen(false); }} onSubmit={handleUpdateJob} job={job} />
                         </DialogContent>
                       </Dialog>
                     </div>

@@ -6,19 +6,17 @@ import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
 
 interface EditJobFormProps {
-  onUpdate: (job: Job) => void
+  onSubmit: (job: Job) => void
   onClose: () => void
   job: Job
 }
 
-export function EditJobForm({ onUpdate, onClose, job }: EditJobFormProps) {
+export function EditJobForm({ onSubmit, onClose, job }: EditJobFormProps) {
   const [description, setDescription] = useState(job.description)
   const company = useSession().data?.user?.name;
 
 
   const handleSubmit = (e: React.FormEvent) => {
-
-    // So that I dont have to type everytime
 
     e.preventDefault()
 
@@ -29,7 +27,7 @@ export function EditJobForm({ onUpdate, onClose, job }: EditJobFormProps) {
         description,
       }
 
-      onUpdate(newJob)
+      onSubmit(newJob)
       onClose()
     }
   }
