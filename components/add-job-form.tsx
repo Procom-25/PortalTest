@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label"
 import { GradientButton } from "@/components/gradient-button"
 import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
-import date from 'date-and-time'
 
 interface AddJobFormProps {
   onSubmit: (job: Job) => void
@@ -13,9 +12,7 @@ interface AddJobFormProps {
 
 export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
   const [title, setTitle] = useState("")
-  const [status, setStatus] = useState<"open" | "closed">("open")
   const [description, setDescription] = useState("")
-  const [deadline, setDeadline] = useState(Date.now())
   const company = useSession().data?.user?.name;
 
 
@@ -29,9 +26,7 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
       const newJob: Job = {
         title,
         company,
-        deadline: new Date(deadline),
         description,
-        status,
       }
 
       onSubmit(newJob)
@@ -58,21 +53,6 @@ export function AddJobForm({ onSubmit, onClose }: AddJobFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter job description"
-          required
-        />
-      </div>
-      {/* TODO Impliment date picker */}
-      <div className="space-y-2">
-        <Label htmlFor="deadline">Application Deadline</Label>
-        <Input
-          id="deadline"
-          type="date"
-          value={deadline}
-          onChange={(e) => {
-            setDeadline((new Date(e.target.value)).getTime())
-            console.log(deadline);
-          }}
-          placeholder="Enter application deadline"
           required
         />
       </div>

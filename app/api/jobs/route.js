@@ -4,7 +4,6 @@ import { conn } from '@/lib/db/db';
 import { Job } from "@/lib/db/model/Job"
 import { URL } from 'url';
 
-import date from 'date-and-time';
 
 
 export async function POST(request) {
@@ -12,14 +11,10 @@ export async function POST(request) {
         await mongoose.connect(conn);
         const data = await request.json();
 
-        console.log("Date: " + date.parse(data.applicationDeadline))
-
         const newJob = new Job({
             title: data.title,
             company: data.company,
             description: data.description,
-            status: data.status,
-            applicationDeadline: date.parse(data.applicationDeadline),
         });
 
         const savedJob = await newJob.save();
