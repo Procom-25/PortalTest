@@ -59,18 +59,17 @@ export const authOptions = {
   pages: {
     signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your .env file
+  secret: process.env.NEXTAUTH_SECRET, 
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
   },
   cookies: {
     sessionToken: {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production" , 
         sameSite: "lax",
         path: "/",
         maxAge: 30 * 24 * 60 * 60, // 30 days

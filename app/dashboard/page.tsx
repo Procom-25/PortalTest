@@ -1,13 +1,13 @@
-"use client"; // Mark this component as a client component
+"use client";
 
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { DashboardStats } from "@/components/dashboard-stats";
 import { JobList } from "@/components/job-list";
 import { Button } from "@/components/ui/button";
 import { LogOut, Plus } from "lucide-react";
 import { AppSidebar } from "@/components/app-sidebar";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react"; // Import useEffect
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,23 +24,29 @@ import {
 } from "@/components/ui/sidebar";
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   console.log("Session:", session); // Debugging
 
-  // Use useEffect to handle redirection on the client side
   useEffect(() => {
+    if (status === "loading") return; // Wait until session is loaded
     if (!session) {
       console.log("No session found, redirecting to login page");
       router.push("/login");
     }
-  }, [session, router]);
+  }, [session, status, router]);
 
-  // If there's no session, return null or a loading state
-  if (!session) {
-    return null;
+  if (status === "loading") {
+    return <div>Loading...</div>; // Show a loading state
   }
+
+  if (!session) {
+    return null; // or redirect to login page
+  }
+
+
+  console.log("Session11111:", session); // Debugging
 
   return (
     <SidebarProvider>
@@ -73,7 +79,7 @@ export default function Page() {
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="col-span-4">
               <h1 className="px-4 lg:px-8 text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-                Dashboard
+                Welcome back, {session.user?.name}
               </h1>
               <div className="h-full px-4 py-6 lg:px-8">
                 <DashboardStats />
