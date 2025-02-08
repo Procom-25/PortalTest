@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import mongoose from "mongoose";
 import { conn } from "@/lib/db/db";
 import { Company } from "@/lib/db/model/Company";
@@ -12,6 +13,10 @@ mongoose.connect(conn).catch((err) => {
 
 export const authOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -26,16 +31,17 @@ export const authOptions = {
         try {
           const company = await Company.findOne({ name: credentials.name });
 
-          if (!company) {
-            return null; // Return null if company not found
-          }
+          if (!company) return null; // Return null if company not found
 
           const isMatch = await bcrypt.compare(credentials.password, company.password);
-          if (!isMatch) {
-            return null; // Return null if password is invalid
-          }
+          if (!isMatch) return null; // Return null if password is invalid
 
-          return { id: company._id.toString(), name: company.name };
+          return {
+            id: company._id.toString(),
+            name: company.name,
+            email: company.email || null, // Ensure email is included
+            role: "company", // Distinguish user types
+          };
         } catch (error) {
           console.error("Error during authorization:", error);
           return null;
@@ -44,22 +50,41 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.companyName = user.name;
-        token.id = user.id;
+    async jwt({ token, user, account, profile }) {
+      // Store user data for Google Sign-In
+      if (account?.provider === "google") {
+        token.id = profile.sub;
+        token.name = profile.name;
+        token.email = profile.email;
+        token.image = profile.picture;
+        token.role = "user"; // Distinguish between company & Google users
       }
+
+      // Store user data for company login
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.role = user.role;
+      }
+
       return token;
     },
     async session({ session, token }) {
-      session.user = { name: token.companyName, id: token.id };
+      session.user = {
+        id: token.id,
+        name: token.name,
+        email: token.email,
+        image: token.image || null, // Set image only for Google users
+        role: token.role,
+      };
       return session;
     },
   },
   pages: {
     signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET, 
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -69,7 +94,7 @@ export const authOptions = {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production" , 
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
         maxAge: 30 * 24 * 60 * 60, // 30 days

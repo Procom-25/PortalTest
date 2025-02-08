@@ -1,9 +1,9 @@
-"use client";  // Put this at the top to make this file a client component
+"use client";  // Ensure this is a client component
 
 import { SessionProvider } from "next-auth/react";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner"; // Import Sonner
 import "./globals.css";
-// Import metadata from the server-side file
 import { metadata } from "./metadata"; 
 
 const geistSans = Geist({
@@ -22,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <Toaster position="top-right" richColors /> {/* Add Toaster here */}
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
