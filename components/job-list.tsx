@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -11,6 +10,8 @@ import { GradientButton } from "@/components/gradient-button"
 import { useSession } from 'next-auth/react'
 import { Job } from "@/lib/models/Job"
 import { EditJobForm } from "./edit-job-form"
+import { NoJobsPlaceholder } from "@/components/no-jobs-placeholder"
+import { LoadingPlaceholder } from "@/components/loading-placeholder"
 
 interface Resume {
   id: string
@@ -259,9 +260,9 @@ export function JobList() {
                   </div>
                 </TableCell>
               </TableRow>
-            )) : <p>No Jobs Added Placeholder</p>}
+            )) : <NoJobsPlaceholder />}
           </TableBody>
-        </Table> : <p>Loading Placeholder</p>}
+        </Table> : <LoadingPlaceholder />}
       </div>
     </div >
   )
