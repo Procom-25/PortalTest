@@ -5,7 +5,6 @@ import { Toaster } from "sonner";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <Toaster />
     <Provider session={session}>
       <Component {...pageProps} />
     </Provider>

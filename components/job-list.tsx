@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, Download, Eye } from "lucide-react" 
 import { AddJobForm } from "@/components/add-job-form"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { GradientButton } from "@/components/gradient-button"
@@ -14,21 +14,26 @@ import { NoJobsPlaceholder } from "@/components/no-jobs-placeholder"
 import { LoadingPlaceholder } from "@/components/loading-placeholder"
 
 interface Resume {
-  id: string
-  applicantName: string
-  resumeLink: string
+  email: string
+  cv_url: string
+  applied_at: string
+}
+
+interface JobWithApplicants extends Job {
+  applicantCount: number
 }
 
 export function JobList() {
 
-  const [jobs, setJobs] = useState(null)
+  const [jobs, setJobs] = useState<JobWithApplicants[] | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
-  const company = useSession().data?.user?.name
+  const [resumes, setResumes] = useState<Resume[]>([])
+  const { data: session } = useSession()
+  const company = session?.user?.name
 
   async function getJobs() {
     try {
-
       if (company) {
         const response = await fetch(
           `/api/jobs?${new URLSearchParams({ company })}`,
@@ -42,23 +47,152 @@ export function JobList() {
         }
 
         const responseBody = await response.json();
+        const jobsData = responseBody.result || [];
 
-        setJobs(responseBody["result"]);
+        // Fetch applicant counts for each job
+        const jobsWithCounts = await Promise.all(jobsData.map(async (job: Job) => {
+          const cvResponse = await fetch(
+            `/api/get-cvs?${new URLSearchParams({
+              company: company,
+              job_title: job.title
+            })}`,
+            {
+              method: 'GET'
+            }
+          );
+
+          if (!cvResponse.ok) {
+            return { ...job, applicantCount: 0 };
+          }
+
+          const cvData = await cvResponse.json();
+          return { ...job, applicantCount: cvData.resumes?.length || 0 };
+        }));
+
+        setJobs(jobsWithCounts);
       }
 
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      setJobs([]);
     }
   }
 
-  const handleViewResumes = (job: Job) => {
+  const handleViewResumes = async (job: Job) => {
     setSelectedJob(job)
+    try {
+      const response = await fetch(
+        `/api/get-cvs?${new URLSearchParams({ 
+          company: company || '',
+          job_title: job.title
+        })}`,
+        {
+          method: 'GET'
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setResumes(data.resumes || []);
+    } catch (error) {
+      console.error('Error fetching resumes:', error);
+      setResumes([]);
+    }
+  }
+
+  const handleDownloadCV = async (cvUrl: string, email: string) => {
+    try {
+      const response = await fetch(`/api/download-cv?url=${encodeURIComponent(cvUrl)}`);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      // Get file extension from URL
+      const extension = cvUrl.split('.').pop()?.toLowerCase() || 'pdf';
+      a.download = `CV-${email}.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    } catch (error) {
+      console.error('Error downloading CV:', error);
+    }
+  }
+
+  const handleViewCV = async (cvUrl: string) => {
+    try {
+      const response = await fetch(`/api/download-cv?url=${encodeURIComponent(cvUrl)}`);
+      if (!response.ok) throw new Error('Failed to fetch CV');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Get file extension from URL
+      const extension = cvUrl.split('.').pop()?.toLowerCase();
+
+      // Open in a new window with appropriate viewer
+      const viewer = window.open('', '_blank');
+      if (viewer) {
+        if (extension === 'pdf') {
+          viewer.document.write(`
+            <iframe 
+              src="${url}" 
+              style="width:100%; height:100vh; border:none;"
+            ></iframe>
+          `);
+        } else if (['doc', 'docx'].includes(extension || '')) {
+          viewer.document.write(`
+            <iframe 
+              src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(cvUrl)}" 
+              style="width:100%; height:100vh; border:none;"
+            ></iframe>
+          `);
+        }
+        // Clean up the object URL after the viewer loads
+        viewer.onload = () => window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Error viewing CV:', error);
+    }
+  }
+
+  const handleDownloadZip = async (job: Job) => {
+    try {
+      const response = await fetch(
+        `/api/get-cvs?${new URLSearchParams({
+          company: company || '',
+          job_title: job.title
+        })}`,
+        {
+          method: 'GET'
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${job.title}-resumes.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+
+    } catch (error) {
+      console.error('Error downloading resumes:', error);
+    }
   }
 
   const handleAddJob = async (newJob: Job) => {
-
-    console.log(JSON.stringify(newJob));
-
     try {
       const response = await fetch(
         `/api/jobs`,
@@ -72,19 +206,14 @@ export function JobList() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const responseBody = await response.json();
-
-      setJobs(responseBody["result"]);
+      getJobs();
 
     } catch (error) {
-      console.error('Error fetching jobs:', error);
+      console.error('Error adding job:', error);
     }
   }
 
   const handleUpdateJob = async (newJob: Job) => {
-
-    console.log(JSON.stringify(newJob));
-
     try {
       const response = await fetch(
         `/api/jobs`,
@@ -98,12 +227,10 @@ export function JobList() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const responseBody = await response.json();
-
-      setJobs(responseBody["result"]);
+      getJobs();
 
     } catch (error) {
-      console.error('Error fetching jobs:', error);
+      console.error('Error updating job:', error);
     }
   }
 
@@ -123,14 +250,15 @@ export function JobList() {
       getJobs();
 
     } catch (error) {
-      console.error('Error fetching jobs:', error);
+      console.error('Error deleting job:', error);
     }
   }
 
-
   useEffect(() => {
-    getJobs();
-  }, [])
+    if (company) {
+      getJobs();
+    }
+  }, [company])
 
   return (
     <div className="space-y-4">
@@ -160,32 +288,38 @@ export function JobList() {
         </Dialog>
       </div>
       <div className="border rounded-md bg-[#FDFDFD]">
-        {jobs ? <Table>
-          <TableBody>
-            {jobs.length > 0 ? jobs.map((job, index) => (
-              <TableRow key={job.title}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2 ml-3">
-                    {/* <span className="font-mono text-s text-muted-foreground">#{job.id}</span> */}
-                    <span className="">{index + 1}.</span>
-                  </div>
-                </TableCell>
+        {jobs === null ? (
+          <LoadingPlaceholder />
+        ) : jobs.length > 0 ? (
+          <Table>
+            <TableBody>
+              {jobs.map((job: JobWithApplicants, index: number) => (
+                <TableRow key={`${job.title}-${index}`}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2 ml-3">
+                      <span className="">{index + 1}.</span>
+                    </div>
+                  </TableCell>
 
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    {/* <span className="font-mono text-s text-muted-foreground">#{job.id}</span> */}
-                    <span className="font-">{job.title}</span>
-                  </div>
-                </TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <span className="font-">{job.title}</span>
+                    </div>
+                  </TableCell>
 
-                {/* View Resumes Button */}
-                <TableCell>
-                  <div className="flex justify-end">
-                    <div className="flex justify-end pr-4">
-                      <Dialog>
-                        <DialogTrigger asChild>
+                  <TableCell>
+                    <div className="flex justify-end items-center">
+                      <div className="flex items-center mr-6">
+                        <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">
+                          {job.applicantCount} Applicants
+                        </span>
+                      </div>
+
+                      <div className="flex justify-end pr-4">
+                        <Dialog>
+                          <DialogTrigger asChild>
                           <Button variant="secondary" onClick={() => handleViewResumes(job)}>
-                            View Resumes {/* ({job.resumes.length}) */}
+                            View Resumes
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
@@ -193,20 +327,31 @@ export function JobList() {
                             <DialogTitle>Resumes for {job.title}</DialogTitle>
                           </DialogHeader>
                           <div className="mt-4">
-                            {job.resume && job.resumes.length > 0 ? (
+                            {resumes && resumes.length > 0 ? (
                               <ul className="space-y-2">
-                                {/* {job.resumes.map((resume) => (
-                                <li key={resume.id}>
-                                  <a
-                                    href={resume.resumeLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:underline"
-                                  >
-                                    {resume.applicantName}
-                                  </a>
-                                </li>
-                              ))} */}
+                                {resumes.map((resume, idx) => (
+                                  <li key={idx} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
+                                    <span>{resume.email}</span>
+                                    <div className="flex gap-2">
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleViewCV(resume.cv_url)}
+                                      >
+                                        <Eye className="h-4 w-4 mr-1" />
+                                        View
+                                      </Button>
+                                      <Button 
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleDownloadCV(resume.cv_url, resume.email)}
+                                      >
+                                        <Download className="h-4 w-4 mr-1" />
+                                        Download
+                                      </Button>
+                                    </div>
+                                  </li>
+                                ))}
                               </ul>
                             ) : (
                               <p>No resumes available for this job.</p>
@@ -236,7 +381,6 @@ export function JobList() {
                     <div className="flex justify-end pr-4">
                       <Dialog>
                         <DialogTrigger asChild>
-                          {/* TODO: Musab yahan delete button daldo koi acha sa dekh ke */}
                           <Button variant="secondary" className="text-[#FF0000]">
                             Delete
                           </Button>
@@ -246,7 +390,6 @@ export function JobList() {
                             <DialogTitle >Delete the {job.title} job post? </DialogTitle>
                           </DialogHeader>
                           <DialogFooter>
-                            {/*TODO: Make the yes button more prominent (darker color) */}
                             <DialogTrigger asChild>
                               <Button className="text-white bg-red-500 hover:bg-red-600" onClick={() => handleDeleteJob(job)} variant="secondary">Yes</Button>
                             </DialogTrigger>
@@ -260,11 +403,13 @@ export function JobList() {
                   </div>
                 </TableCell>
               </TableRow>
-            )) : <NoJobsPlaceholder />}
+            ))}
           </TableBody>
-        </Table> : <LoadingPlaceholder />}
+        </Table>
+      ) : (
+        <NoJobsPlaceholder />
+      )}
       </div>
-    </div >
+    </div>
   )
 }
-

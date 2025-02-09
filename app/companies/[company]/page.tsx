@@ -34,8 +34,13 @@ export default function JobListings({
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [company, setCompany] = useState<string>('');
 
-  const company = decodeURIComponent(params.company);
+  useEffect(() => {
+    if (params.company) {
+      setCompany(decodeURIComponent(params.company));
+    }
+  }, [params.company]);
 
   const handleLogout = async () => {
     await signOut({ 
@@ -148,7 +153,7 @@ export default function JobListings({
       formData.append('userId', userId);
       formData.append('name', session.user?.name || '');
       formData.append('email', session.user?.email || '');
-      formData.append('company', company);
+      formData.append('company', company || '');
       formData.append('job_title', selectedJob?.title || '');
 
       const response = await fetch('/api/post-cvs', {
@@ -194,11 +199,13 @@ export default function JobListings({
   };
 
   useEffect(() => {
-    getJobs();
+    if (company) {
+      getJobs();
+    }
   }, [company]);
 
   useEffect(() => {
-    if (session?.user?.email) {
+    if (session?.user?.email && company) {
       getAppliedJobs();
     }
   }, [session, company]);
@@ -381,4 +388,4 @@ export default function JobListings({
       </Dialog>
     </div>
   );
-}
+}  
