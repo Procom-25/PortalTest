@@ -57,25 +57,24 @@ export default function CompanyListings({
       </div>
       <div className="flex-1 p-6 lg:p-8 w-full lg:w-[60%] flex flex-col items-center justify-center">
         <div className="w-full max-w-3xl flex flex-col px-10">
-          <div className="my-8">
-            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter md:text-left text-center">
+          <div className="my-4">
+            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter text-center">
               Companies
             </h2>
           </div>
-          <div className="w-full">
-            <ScrollArea className="h-[70vh] w-full">
-              <div className="space-y-3 py-4">
+            <ScrollArea className="h-[70vh] pr-4">
+              <div className="space-y-3 p-4">
                 {companies ? (
                   companies.map((company: Company) => (
                     <Card
                       key={company.id}
-                      className="rounded-2xl border bg-card text-card-foreground
+                      className="rounded-xl border bg-card text-card-foreground
                       hover:bg-secondary hover:cursor-pointer hover:shadow-md 
                       hover:shadow-[rgba(25,157,223,0.5)] transition-all duration-300
                       "
                     >
                       <a href={`/companies/${company.name}`}>
-                        <CardContent className="py-5 text-2xl font-semibold opacity-70 hover:opacity-100">
+                        <CardContent className="py-5 text-2xl font-semibold opacity-70 hover:opacity-100 text-center">
                           {company.name}
                         </CardContent>
                       </a>
@@ -86,7 +85,6 @@ export default function CompanyListings({
                 )}
               </div>
             </ScrollArea>
-          </div>
         </div>
       </div>
     </div>

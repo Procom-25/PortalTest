@@ -21,6 +21,8 @@ import { Job } from "@/lib/models/Job";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LogOut, LogIn } from "lucide-react";
+import { GradientButton } from "@/components/gradient-button";
 
 export default function JobListings({
   params,
@@ -211,28 +213,31 @@ export default function JobListings({
   }, [session, company]);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overscroll-none">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {session ? (
           <>
-            <Button 
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              Logout
+            <Button variant="destructive" onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
             </Button>
           </>
         ) : (
-          <Button 
-            onClick={handleLogin}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+          <GradientButton
+                  gradientFrom="from-[#199DDF]"
+                  gradientTo="to-[#145BD5]"
+                  hoverGradientFrom="from-[#199DDF]"
+                  hoverGradientTo="to-[#145BD5]"
+                  onClick={handleLogin}
+                  className="hover:opacity-90 hover:shadow-md hover:shadow-[rgba(25,157,223,0.5)]"
           >
+            <LogIn className="mr-2 h-4 w-4"/>
             Login with Google
-          </Button>
+          </GradientButton>
         )}
       </div>
 
-      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none">
+      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto">
         <Image
           src="/comp.jpg"
           alt="Background Image"
@@ -263,13 +268,13 @@ export default function JobListings({
         </div>
       </div>
       <div className="flex-1 p-6 lg:p-8 w-full lg:w-[60%] flex flex-col items-center justify-center">
-        <div className="w-full max-w-3xl flex flex-col px-10">
-          <div className="my-8">
-            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter md:text-left text-center">
+        <div className="w-screen max-w-3xl flex flex-col px-10">
+          <div className="my-4">
+            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter text-center">
               Job Listings
             </h2>
           </div>
-          <ScrollArea className="h-[80vh] pr-4">
+          <ScrollArea className="h-[70vh] pr-4">
             <div className="space-y-3 p-4">
               {jobs ? (
                 jobs.map((job: Job) => (
@@ -282,7 +287,7 @@ export default function JobListings({
                     }`}
                     onClick={() => handleJobClick(job)}
                   >
-                    <CardContent className="p-5 text-2xl text-center font-semibold">
+                    <CardContent className="p-5 text-2xl opacity-70 hover:opacity-100 text-center font-semibold font-gothic">
                       <p>{job.title}</p>
                       {appliedJobs.includes(job.title) && (
                         <p className="text-sm text-green-600">Already Applied</p>

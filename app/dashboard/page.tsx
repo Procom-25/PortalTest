@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { DashboardStats } from "@/components/dashboard-stats";
-import { JobList } from "@/components/job-list";
-import { Button } from "@/components/ui/button";
-import { LogOut, Plus } from "lucide-react";
-import { AppSidebar } from "@/components/app-sidebar";
+import { useSession, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { DashboardStats } from "@/components/dashboard-stats"
+import { JobList } from "@/components/job-list"
+import { Button } from "@/components/ui/button"
+import { LogOut } from "lucide-react"
+import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,38 +15,40 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import DashboardSkeleton from "@/components/DashboardSkeleton"
 
 export default function Page() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  console.log("Session:", session); // Debugging
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (status === "loading") return; // Wait until session is loaded
+    if (status === "loading") return
     if (!session) {
-      console.log("No session found, redirecting to login page");
-      router.push("/login");
+      console.log("No session found, redirecting to login page")
+      router.push("/login")
+    } else {
+      setIsLoading(false)
     }
-  }, [session, status, router]);
+  }, [session, status, router])
 
-  if (status === "loading") {
-    return <div>Loading...</div>; // Show a loading state
+  if (status === "loading" || isLoading) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <DashboardSkeleton />
+        </SidebarInset>
+      </SidebarProvider>
+    )
   }
 
   if (!session) {
-    return null; // or redirect to login page
+    return null
   }
-
-
-  console.log("Session11111:", session); // Debugging
 
   return (
     <SidebarProvider>
@@ -92,5 +94,5 @@ export default function Page() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

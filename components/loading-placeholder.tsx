@@ -1,8 +1,14 @@
-export function LoadingPlaceholder() {
+import type React from "react"
+
+export function LoadingPlaceholder(){
   return (
-    <div className="flex items-center justify-center p-8">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      <span className="ml-3 text-lg font-medium text-gray-700">Loading jobs...</span>
+    <div className="space-y-4">
+      {[...Array(5)].map((_, index) => (
+        <div key={index} className="animate-pulse rounded-xl border bg-card p-5">
+          <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      ))}
     </div>
   )
 }
