@@ -69,8 +69,9 @@ export async function POST(request) {
         await mongoose.connect(conn);
         const buffer = Buffer.from(await resume.arrayBuffer());
         const objectURL = await UploadToS3Bucket(buffer, resume.name);
-
+        console.log(formData)
         // Store application in database
+
         const jobApplication = new JobsAppliedd({
             email: email1,
             name: name1,

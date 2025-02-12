@@ -21,13 +21,13 @@ interface Resume {
 
 interface JobWithApplicants extends Job {
   applicantCount: number
+  resumes?: Resume[]
 }
 
 export function JobList() {
   const [jobs, setJobs] = useState<JobWithApplicants[] | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
-  const [resumes, setResumes] = useState<Resume[]>([])
+  const [selectedJob, setSelectedJob] = useState<JobWithApplicants | null>(null)
   const { data: session } = useSession()
   const company = session?.user?.name
 
@@ -45,8 +45,8 @@ export function JobList() {
         const responseBody = await response.json()
         const jobsData = responseBody.result || []
 
-        // Fetch applicant counts for each job
-        const jobsWithCounts = await Promise.all(
+        // Fetch applicant counts and resumes for each job in one go
+        const jobsWithData = await Promise.all(
           jobsData.map(async (job: Job) => {
             const cvResponse = await fetch(
               `/api/get-cvs?${new URLSearchParams({
@@ -59,15 +59,19 @@ export function JobList() {
             )
 
             if (!cvResponse.ok) {
-              return { ...job, applicantCount: 0 }
+              return { ...job, applicantCount: 0, resumes: [] }
             }
 
             const cvData = await cvResponse.json()
-            return { ...job, applicantCount: cvData.resumes?.length || 0 }
+            return { 
+              ...job, 
+              applicantCount: cvData.resumes?.length || 0,
+              resumes: cvData.resumes || []
+            }
           }),
         )
 
-        setJobs(jobsWithCounts)
+        setJobs(jobsWithData)
       }
     } catch (error) {
       console.error("Error fetching jobs:", error)
@@ -75,29 +79,8 @@ export function JobList() {
     }
   }
 
-  const handleViewResumes = async (job: Job) => {
+  const handleViewResumes = (job: JobWithApplicants) => {
     setSelectedJob(job)
-    try {
-      const response = await fetch(
-        `/api/get-cvs?${new URLSearchParams({
-          company: company || "",
-          job_title: job.title,
-        })}`,
-        {
-          method: "GET",
-        },
-      )
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      setResumes(data.resumes || [])
-    } catch (error) {
-      console.error("Error fetching resumes:", error)
-      setResumes([])
-    }
   }
 
   const handleDownloadCV = async (cvUrl: string, email: string) => {
@@ -109,7 +92,6 @@ export function JobList() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      // Get file extension from URL
       const extension = cvUrl.split(".").pop()?.toLowerCase() || "pdf"
       a.download = `CV-${email}.${extension}`
       document.body.appendChild(a)
@@ -128,11 +110,8 @@ export function JobList() {
 
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
-
-      // Get file extension from URL
       const extension = cvUrl.split(".").pop()?.toLowerCase()
 
-      // Open in a new window with appropriate viewer
       const viewer = window.open("", "_blank")
       if (viewer) {
         if (extension === "pdf") {
@@ -150,7 +129,6 @@ export function JobList() {
             ></iframe>
           `)
         }
-        // Clean up the object URL after the viewer loads
         viewer.onload = () => window.URL.revokeObjectURL(url)
       }
     } catch (error) {
@@ -242,7 +220,7 @@ export function JobList() {
     if (company) {
       getJobs()
     }
-  }, [company, getJobs]) // Added getJobs to dependencies
+  }, [company])
 
   return (
     <div className="space-y-4">
@@ -318,9 +296,9 @@ export function JobList() {
                               <DialogTitle>Resumes for {job.title}</DialogTitle>
                             </DialogHeader>
                             <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                              {resumes && resumes.length > 0 ? (
+                              {job.resumes && job.resumes.length > 0 ? (
                                 <ul className="space-y-2">
-                                  {resumes.map((resume, idx) => (
+                                  {job.resumes.map((resume, idx) => (
                                     <li
                                       key={idx}
                                       className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2 hover:bg-gray-50 rounded"
@@ -407,4 +385,3 @@ export function JobList() {
     </div>
   )
 }
-

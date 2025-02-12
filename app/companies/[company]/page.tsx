@@ -21,8 +21,6 @@ import { Job } from "@/lib/models/Job";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { LogOut, LogIn } from "lucide-react";
-import { GradientButton } from "@/components/gradient-button";
 
 export default function JobListings({
   params,
@@ -44,60 +42,39 @@ export default function JobListings({
     }
   }, [params.company]);
 
-  const handleLogout = async () => {
-    await signOut({ 
-      redirect: false 
+  const handleLogout = () => {
+    signOut({
+      callbackUrl: `/companies/${company}`
     });
-
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    localStorage.clear();
-    sessionStorage.clear();
-
     toast.success("Successfully logged out");
-
-    router.push(`/companies/${company}`);
   };
 
-  const handleLogin = async () => {
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+  const handleLogin = () => {
+    signIn('google', {
+      callbackUrl: `/companies/${company}`,
+      prompt: 'select_account'
     });
-  
-    localStorage.clear();
-    sessionStorage.clear();
-  
-    await signOut({ redirect: false });
-  
-    await signIn('google', { 
-      callbackUrl: `/companies/${company}`, 
-      prompt: 'select_account' 
-    });
-
-    toast.success("Successfully logged in");
   };
 
-  const getAppliedJobs = async () => {
-    if (session?.user?.email) {
-      try {
-        const response = await fetch(`/api/applied-jobs?email=${session.user.email}&company=${company}`)
-        ;
-        if (response.ok) {
-          const data = await response.json();
-          const appliedJobTitles = data.jobs.map((job: any) => job.job);
-          setAppliedJobs(appliedJobTitles);
+  // Only fetch applied jobs once when session and company are available
+  useEffect(() => {
+    const getAppliedJobs = async () => {
+      if (session?.user?.email && company) {
+        try {
+          const response = await fetch(`/api/applied-jobs?email=${session.user.email}&company=${company}`);
+          if (response.ok) {
+            const data = await response.json();
+            const appliedJobTitles = data.jobs.map((job: any) => job.job);
+            setAppliedJobs(appliedJobTitles);
+          }
+        } catch (error) {
+          console.error("Error fetching applied jobs:", error);
         }
-      } catch (error) {
-        console.error("Error fetching applied jobs:", error);
       }
-    }
-  };
+    };
+
+    getAppliedJobs();
+  }, [session?.user?.email, company]);
   
   async function getJobs() {
     try {
@@ -134,7 +111,8 @@ export default function JobListings({
     e.preventDefault();
     if (!session) {
       signIn('google', {
-        callbackUrl: `/companies/${company}`
+        callbackUrl: `/companies/${company}`,
+        prompt: 'select_account'
       });
       return;
     }
@@ -150,8 +128,7 @@ export default function JobListings({
       if (resumeFile) {
         formData.append('resume', resumeFile);
       }
-      // Get sub property from session token which contains the user ID
-      const userId = (session as any)?.token?.sub || '';
+      const userId = session?.user?.email || '';
       formData.append('userId', userId);
       formData.append('name', session.user?.name || '');
       formData.append('email', session.user?.email || '');
@@ -187,7 +164,8 @@ export default function JobListings({
   const handleJobClick = (job: Job) => {
     if (!session) {
       signIn('google', {
-        callbackUrl: `/companies/${company}`
+        callbackUrl: `/companies/${company}`,
+        prompt: 'select_account'
       });
       return;
     }
@@ -206,38 +184,29 @@ export default function JobListings({
     }
   }, [company]);
 
-  useEffect(() => {
-    if (session?.user?.email && company) {
-      getAppliedJobs();
-    }
-  }, [session, company]);
-
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row overscroll-none">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {session ? (
           <>
-            <Button variant="destructive" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Log out
+            <Button 
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Logout
             </Button>
           </>
         ) : (
-          <GradientButton
-                  gradientFrom="from-[#199DDF]"
-                  gradientTo="to-[#145BD5]"
-                  hoverGradientFrom="from-[#199DDF]"
-                  hoverGradientTo="to-[#145BD5]"
-                  onClick={handleLogin}
-                  className="hover:opacity-90 hover:shadow-md hover:shadow-[rgba(25,157,223,0.5)]"
+          <Button 
+            onClick={handleLogin}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            <LogIn className="mr-2 h-4 w-4"/>
             Login with Google
-          </GradientButton>
+          </Button>
         )}
       </div>
 
-      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto">
+      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none">
         <Image
           src="/comp.jpg"
           alt="Background Image"
@@ -268,13 +237,13 @@ export default function JobListings({
         </div>
       </div>
       <div className="flex-1 p-6 lg:p-8 w-full lg:w-[60%] flex flex-col items-center justify-center">
-        <div className="w-screen max-w-3xl flex flex-col px-10">
-          <div className="my-4">
-            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter text-center">
+        <div className="w-full max-w-3xl flex flex-col px-10">
+          <div className="my-8">
+            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter md:text-left text-center">
               Job Listings
             </h2>
           </div>
-          <ScrollArea className="h-[70vh] pr-4">
+          <ScrollArea className="h-[80vh] pr-4">
             <div className="space-y-3 p-4">
               {jobs ? (
                 jobs.map((job: Job) => (
@@ -287,7 +256,7 @@ export default function JobListings({
                     }`}
                     onClick={() => handleJobClick(job)}
                   >
-                    <CardContent className="p-5 text-2xl opacity-70 hover:opacity-100 text-center font-semibold font-gothic">
+                    <CardContent className="p-5 text-2xl text-center font-semibold">
                       <p>{job.title}</p>
                       {appliedJobs.includes(job.title) && (
                         <p className="text-sm text-green-600">Already Applied</p>
