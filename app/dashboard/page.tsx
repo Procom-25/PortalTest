@@ -62,7 +62,7 @@ export default function Page() {
           <div className="flex items-center gap-2 px-3">
             <div>P&apos; 25</div>
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <div>Procom &apos;25</div>
+            <div className="font-bold">Procom &apos;25</div>
           </div>
           <div className="ml-auto flex items-center gap-2 px-3">
             <Button variant="ghost" size="sm" onClick={() => signOut()}>
@@ -75,7 +75,7 @@ export default function Page() {
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="col-span-4">
               <h1 className=" px-8 pt-16 pb-4 text-3xl font-bold text-center tracking-tighter sm:text-6xl md:text-7xl">
-                Procom'25 Job Portal
+                Procom '25 Job Portal
               </h1>
               <h1 className="px-4 lg:px-8 pt-4 pb-8 text-2xl font-light text-center tracking-tighter sm:text-3xl md:text-4xl">
                 Welcome back, {session.user?.name}!
