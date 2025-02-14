@@ -61,7 +61,6 @@ export default function CompanyListings({
           </div>
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-      
           <p className="text-xl sm:text-3xl text-white animate-fade-in-up text-center lg:text-center absolute top-[80%] transform translate-y-1/2">
             Your Journey Begins Here!
           </p>
@@ -74,29 +73,29 @@ export default function CompanyListings({
               Companies
             </h2>
           </div>
-            <ScrollArea className="h-[70vh] pr-4">
-              <div className="space-y-3 p-4">
-                {companies ? (
-                  companies.map((company: Company) => (
-                    <Card
-                      key={company.id}
-                      className="rounded-xl border bg-card text-card-foreground
+          <ScrollArea className="h-[70vh] pr-4">
+            <div className="space-y-3 p-4">
+              {companies ? (
+                companies.map((company: Company) => (
+                  <Card
+                    key={company.id}
+                    className="rounded-xl border bg-card text-card-foreground
                       hover:bg-secondary hover:cursor-pointer hover:shadow-md 
                       hover:shadow-[rgba(25,157,223,0.5)] transition-all duration-300
                       "
-                    >
-                      <a href={`/companies/${company.name}`}>
-                        <CardContent className="py-5 text-2xl font-semibold opacity-70 hover:opacity-100 text-center">
-                          {company.name}
-                        </CardContent>
-                      </a>
-                    </Card>
-                  ))
-                ) : (
-                  <LoadingPlaceholder />
-                )}
-              </div>
-            </ScrollArea>
+                  >
+                    <a href={`/companies/${company.name}`}>
+                      <CardContent className="py-5 text-3xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center">
+                        {company.name}
+                      </CardContent>
+                    </a>
+                  </Card>
+                ))
+              ) : (
+                <LoadingPlaceholder />
+              )}
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
