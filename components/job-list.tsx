@@ -259,16 +259,10 @@ export function JobList() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <GradientButton
-              gradientFrom="from-[#199DDF]"
-              gradientTo="to-[#145BD5]"
-              hoverGradientFrom="from-[#199DDF]"
-              hoverGradientTo="to-[#145BD5]"
-              className="w-full sm:w-auto"
-            >
+            <Button variant="dashboard" className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Add Job
-            </GradientButton>
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -295,31 +289,30 @@ export function JobList() {
                   key={`${job.title}-${index}`}
                   className="flex flex-col sm:table-row"
                 >
-                  <TableCell className="font-medium sm:w-1/12">
-                    <div className="flex items-center gap-2 ml-3">
+                  <TableCell className="font-medium sm:w-1/12 sr-only sm:not-sr-only">
+                    <div className="flex text-lg items-center gap-2 ml-3">
                       <span className="">{index + 1}.</span>
                     </div>
                   </TableCell>
 
-                  <TableCell className="font-medium sm:w-3/12">
-                    <div className="flex items-center gap-2 ml-3">
-                      <span className="font-medium">{job.title}</span>
+                  <TableCell className="font-medium">
+                    <div className="flex text-xl justify-center sm:justify-around items-center gap-2">
+                      <span className="font-semibold sm:font-medium text-center sm:text-left text-base text-lg w-full">{job.title}</span>
                     </div>
                   </TableCell>
-
-                  <TableCell className="sm:w-8/12">
-                    <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-2 sm:gap-4">
+                  <TableCell className="flex justify-center sm:justify-end">
+                    <div className="flex flex-col sm:flex-row justify-end sm:justify-end items-center sm:items-center gap-5 sm:gap-4">
                       <div className="flex items-center">
-                        <span className="px-3 py-1 rounded-full mr-4 bg-green-100 text-green-800 text-sm font-medium">
+                        <span className="ml-3 px-3 py-1 rounded-full mr-4 bg-green-100 text-green-800 text-sm font-medium">
                           {job.applicantCount} Applicants
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+                      <div className="flex flex-wrap ml-3 gap-2 justify-start sm:justify-end">
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
-                              variant="secondary"
+                              variant="dashboard"
                               onClick={() => handleViewResumes(job)}
                             >
                               View Resumes
@@ -381,7 +374,7 @@ export function JobList() {
                         </Dialog>
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button variant="secondary">Edit</Button>
+                            <Button variant="dashboard">Edit</Button>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
@@ -402,8 +395,8 @@ export function JobList() {
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
-                              variant="secondary"
-                              className="text-[#FF0000]"
+                              variant="dashboard"
+                              className="text-[#FF0000] hover:bg-[#FF0000] hover:text-white"
                             >
                               Delete
                             </Button>
@@ -419,13 +412,13 @@ export function JobList() {
                                 <Button
                                   className="text-white bg-red-500 hover:bg-red-600"
                                   onClick={() => handleDeleteJob(job)}
-                                  variant="secondary"
+                                  variant="dashboard"
                                 >
                                   Yes
                                 </Button>
                               </DialogTrigger>
                               <DialogTrigger asChild>
-                                <Button variant="secondary">No</Button>
+                                <Button variant="dashboard">No</Button>
                               </DialogTrigger>
                             </DialogFooter>
                           </DialogContent>

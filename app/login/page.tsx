@@ -1,7 +1,24 @@
-import Image from "next/image";
-import { LoginForm } from "@/components/login-form";
+"use client"
+
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import { LoginForm } from "@/components/login-form"
+import { LoginSkeleton } from "@/components/login-skeleton"
+
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => setIsLoading(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isLoading) {
+    return <LoginSkeleton />
+  }
+  
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex items-center h-screen justify-center">

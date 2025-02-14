@@ -49,7 +49,19 @@ export default function CompanyListings({
           className="dark:brightness-[0.2] dark:grayscale"
           priority
         />
-        <div className="absolute inset-0 bg-black bg-opacity-65 flex flex-col items-center justify-center p-6">
+        <div className="absolute inset-0 bg-black bg-opacity-65 flex flex-col justify-between p-8">
+          <div className="flex items-center gap-2 p-4">
+            <div className="w-8 h-12 ">
+              <img
+                src="https://www.procom.com.pk/Procom-Logo.png"
+                alt="Company Logo"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+      
           <p className="text-xl sm:text-3xl text-white animate-fade-in-up text-center lg:text-center absolute top-[80%] transform translate-y-1/2">
             Your Journey Begins Here!
           </p>
