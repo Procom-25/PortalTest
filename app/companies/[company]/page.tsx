@@ -201,22 +201,23 @@ export default function JobListings({
         ) : (
           <Button
             onClick={handleLogin}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 
+                      text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-300"
           >
-            Login with Google
+            Login
           </Button>
         )}
       </div>
 
-      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none">
-        <Image
-          src="/comp.jpg"
-          alt="Background Image"
-          layout="fill"
-          objectFit="cover"
-          className="dark:brightness-[0.2] dark:grayscale"
-          priority
-        />
+      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none hidden lg:block">
+  <Image
+    src="/comp.jpg"
+    alt="Background Image"
+    layout="fill"
+    objectFit="cover"
+    className="dark:brightness-[0.2] dark:grayscale"
+    priority
+  />
         <div className="absolute inset-0 bg-black bg-opacity-65 flex flex-col justify-between p-8">
           <div className="flex items-center gap-2 p-4">
             <div className="w-6 h-8 ">
@@ -250,13 +251,14 @@ export default function JobListings({
                 jobs.map((job: Job) => (
                   <Card
                     key={job.title}
-                    className={`rounded-0 border-2 rounded-md border-gray-200 bg-card text-card-foreground
-                      hover:bg-secondary hover:cursor-pointer hover:shadow-md 
-                       transition-all duration-300
-                      py-3 ${
+                    className={`rounded-xl border border-gray-300 bg-white/80 backdrop-blur-md shadow-md 
+                      hover:shadow-xl hover:-translate-y-1 hover:bg-white 
+                      transition-all duration-300 ease-in-out
+                      px-3 py-2 text-sm font-medium text-gray-800 
+                      ${
                         appliedJobs.includes(job.title)
                           ? "opacity-50 cursor-not-allowed"
-                          : ""
+                          : "hover:ring-2 hover:ring-gray-300"
                       }`}
                     onClick={() => handleJobClick(job)}
                   >

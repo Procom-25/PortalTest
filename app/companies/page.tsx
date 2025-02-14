@@ -40,15 +40,15 @@ export default function CompanyListings({
 
   return (
     <div className="min-h-screen max-h-screen flex flex-col lg:flex-row bg-gradient-to-r from-white from-60% to-gray-200 to-90%">
-      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto">
-        <Image
-          src="/comp.jpg"
-          alt="Background Image"
-          layout="fill"
-          objectFit="cover"
-          className="dark:brightness-[0.2] dark:grayscale"
-          priority
-        />
+      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none hidden lg:block">
+      <Image
+    src="/comp.jpg"
+    alt="Background Image"
+    layout="fill"
+    objectFit="cover"
+    className="dark:brightness-[0.2] dark:grayscale"
+    priority
+  />
         <div className="absolute inset-0 bg-black bg-opacity-65 flex flex-col justify-between p-8">
           <div className="flex items-center gap-2 p-4">
             <div className="w-8 h-12 ">
@@ -79,11 +79,11 @@ export default function CompanyListings({
                 companies.map((company: Company) => (
                   <Card
                     key={company.id}
-                    className="rounded-0 border-2 rounded-md border-gray-200 bg-card text-card-foreground
-                      hover:bg-secondary hover:cursor-pointer hover:shadow-md 
-                      transition-all duration-300
-                      py-3 
-                      "
+                    className={`rounded-xl border border-gray-300 bg-white/80 backdrop-blur-md shadow-md 
+                      hover:shadow-xl hover:-translate-y-1 hover:bg-white 
+                      transition-all duration-300 ease-in-out
+                      px-3 py-2 text-sm font-medium text-gray-800 
+                     `}
                   >
                     <a href={`/companies/${company.name}`}>
                       <CardContent className="py-5 text-black text-2xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center">
