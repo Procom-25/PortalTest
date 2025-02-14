@@ -34,7 +34,7 @@ export default function JobListings({
   const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [company, setCompany] = useState<string>('');
+  const [company, setCompany] = useState<string>("");
 
   useEffect(() => {
     if (params.company) {
@@ -44,15 +44,15 @@ export default function JobListings({
 
   const handleLogout = () => {
     signOut({
-      callbackUrl: `/companies/${company}`
+      callbackUrl: `/companies/${company}`,
     });
     toast.success("Successfully logged out");
   };
 
   const handleLogin = () => {
-    signIn('google', {
+    signIn("google", {
       callbackUrl: `/companies/${company}`,
-      prompt: 'select_account'
+      prompt: "select_account",
     });
   };
 
@@ -61,7 +61,9 @@ export default function JobListings({
     const getAppliedJobs = async () => {
       if (session?.user?.email && company) {
         try {
-          const response = await fetch(`/api/applied-jobs?email=${session.user.email}&company=${company}`);
+          const response = await fetch(
+            `/api/applied-jobs?email=${session.user.email}&company=${company}`
+          );
           if (response.ok) {
             const data = await response.json();
             const appliedJobTitles = data.jobs.map((job: any) => job.job);
@@ -75,7 +77,7 @@ export default function JobListings({
 
     getAppliedJobs();
   }, [session?.user?.email, company]);
-  
+
   async function getJobs() {
     try {
       if (company) {
@@ -110,9 +112,9 @@ export default function JobListings({
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
-      signIn('google', {
+      signIn("google", {
         callbackUrl: `/companies/${company}`,
-        prompt: 'select_account'
+        prompt: "select_account",
       });
       return;
     }
@@ -126,46 +128,46 @@ export default function JobListings({
     try {
       const formData = new FormData();
       if (resumeFile) {
-        formData.append('resume', resumeFile);
+        formData.append("resume", resumeFile);
       }
-      const userId = session?.user?.email || '';
-      formData.append('userId', userId);
-      formData.append('name', session.user?.name || '');
-      formData.append('email', session.user?.email || '');
-      formData.append('company', company || '');
-      formData.append('job_title', selectedJob?.title || '');
+      const userId = session?.user?.email || "";
+      formData.append("userId", userId);
+      formData.append("name", session.user?.name || "");
+      formData.append("email", session.user?.email || "");
+      formData.append("company", company || "");
+      formData.append("job_title", selectedJob?.title || "");
 
-      const response = await fetch('/api/post-cvs', {
-        method: 'POST',
+      const response = await fetch("/api/post-cvs", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit application');
+        throw new Error("Failed to submit application");
       }
 
       const result = await response.json();
-      console.log('Application submitted successfully:', result);
-      
+      console.log("Application submitted successfully:", result);
+
       if (selectedJob) {
         setAppliedJobs([...appliedJobs, selectedJob.title]);
       }
-      
+
       setIsApplyDialogOpen(false);
       setSelectedJob(null);
       setResumeFile(null);
       toast.success("Application submitted successfully");
     } catch (error) {
-      console.error('Error submitting application:', error);
+      console.error("Error submitting application:", error);
       toast.error("Failed to submit application");
     }
   };
 
   const handleJobClick = (job: Job) => {
     if (!session) {
-      signIn('google', {
+      signIn("google", {
         callbackUrl: `/companies/${company}`,
-        prompt: 'select_account'
+        prompt: "select_account",
       });
       return;
     }
@@ -185,19 +187,19 @@ export default function JobListings({
   }, [company]);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overscroll-none">
+    <div className="min-h-screen flex flex-col lg:flex-row overscroll-none bg-gradient-to-r from-white from-60% to-gray-200 to-90%">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {session ? (
           <>
-            <Button 
+            <Button
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-700 hover:bg-red-800 text-white"
             >
               Logout
             </Button>
           </>
         ) : (
-          <Button 
+          <Button
             onClick={handleLogin}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
@@ -248,17 +250,22 @@ export default function JobListings({
                 jobs.map((job: Job) => (
                   <Card
                     key={job.title}
-                    className={`rounded-xl border bg-card text-card-foreground transition-all duration-300 ${
-                      appliedJobs.includes(job.title)
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-secondary hover:cursor-pointer hover:shadow-md hover:shadow-[rgba(25,157,223,0.5)]"
-                    }`}
+                    className={`rounded-0 border-2 rounded-md border-gray-200 bg-card text-card-foreground
+                      hover:bg-secondary hover:cursor-pointer hover:shadow-md 
+                       transition-all duration-300
+                      py-3 ${
+                        appliedJobs.includes(job.title)
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                     onClick={() => handleJobClick(job)}
                   >
                     <CardContent className="p-5 text-2xl text-center font-semibold">
                       <p>{job.title}</p>
                       {appliedJobs.includes(job.title) && (
-                        <p className="text-sm text-green-600">Already Applied</p>
+                        <p className="text-sm text-green-600">
+                          Already Applied
+                        </p>
                       )}
                     </CardContent>
                   </Card>
@@ -273,114 +280,132 @@ export default function JobListings({
 
       {/* Job Details Dialog */}
       <Dialog open={!!selectedJob} onOpenChange={() => setSelectedJob(null)}>
-  <DialogContent className="max-w-sm sm:max-w-md mx-auto rounded-xl p-6">
-    <DialogHeader>
-      <DialogTitle>{selectedJob?.title}</DialogTitle>
-      <DialogDescription>{selectedJob?.description}</DialogDescription>
-    </DialogHeader>
+        <DialogContent className="w-[90%] md:w-[500] mx-auto rounded-xl p-6">
+          <DialogHeader>
+            <DialogTitle>{selectedJob?.title}</DialogTitle>
+            <DialogDescription>{selectedJob?.description}</DialogDescription>
+          </DialogHeader>
 
-    <DialogFooter className="mt-4">
-      <Button
-        className="hover:bg-green-700 bg-green-600 rounded-lg"
-        onClick={() => setIsApplyDialogOpen(true)}
-      >
-        Apply Now
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-
+          <DialogFooter className="mt-4">
+            <Button
+              className="hover:bg-green-700 bg-green-600 rounded-lg"
+              onClick={() => setIsApplyDialogOpen(true)}
+            >
+              Apply Now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Application Dialog */}
       <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
-  <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md mx-auto rounded-xl p-5 shadow-lg">
-    <DialogHeader>
-      <DialogTitle className="text-lg font-semibold text-center">
-        Apply for {selectedJob?.title}
-      </DialogTitle>
-      {/* <DialogDescription className="text-sm text-gray-600 text-center">
+        <DialogContent className="w-[90%] md:w-[500] rounded-xl p-5 shadow-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold text-center">
+              Apply for {selectedJob?.title}
+            </DialogTitle>
+            {/* <DialogDescription className="text-sm text-gray-600 text-center">
         Please fill out the form below to apply for this position.
       </DialogDescription> */}
-    </DialogHeader>
+          </DialogHeader>
 
-    <form onSubmit={handleApply} className="space-y-4">
-      <div>
-        <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          {session ? `Logged in as: ${session.user?.name}` : "Please sign in to apply"}
-        </Label>
-      </div>
-
-      {session && (
-        <div className="space-y-3">
-          <Label htmlFor="resume" className="block text-sm font-medium text-gray-700">
-            Upload Resume
-          </Label>
-          <div className="mt-1 flex flex-col items-center justify-center px-4 py-3 border-2 border-dashed rounded-md hover:border-green-600 transition">
-            <svg
-              className="h-10 w-10 text-gray-400 mb-2"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 48 48"
-              aria-hidden="true"
-            >
-              <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div className="text-sm text-gray-600">
-              <label
-                htmlFor="resume"
-                className="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus:outline-none"
+          <form onSubmit={handleApply} className="space-y-4">
+            <div>
+              <Label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
               >
-                <span>Upload a file</span>
-                <Input
-                  id="resume"
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  className="sr-only"
-                  onChange={handleFileChange}
-                  required
-                />
-              </label>
-              <p className="mt-1">or drag and drop</p>
+                {session
+                  ? `Logged in as: ${session.user?.name}`
+                  : "Please sign in to apply"}
+              </Label>
             </div>
-            <p className="text-xs text-gray-500 mt-2">PDF, DOC up to 10MB</p>
-          </div>
 
-          {resumeFile && (
-            <p className="text-sm text-green-600 mt-2 flex items-center">
-              <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-              File selected: {resumeFile.name}
-            </p>
-          )}
-        </div>
-      )}
+            {session && (
+              <div className="space-y-3">
+                <Label
+                  htmlFor="resume"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Upload Resume
+                </Label>
+                <div className="mt-1 flex flex-col items-center justify-center px-4 py-3 border-2 border-dashed rounded-md hover:border-green-600 transition">
+                  <svg
+                    className="h-10 w-10 text-gray-400 mb-2"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="text-sm text-gray-600">
+                    <label
+                      htmlFor="resume"
+                      className="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus:outline-none"
+                    >
+                      <span>Upload a file</span>
+                      <Input
+                        id="resume"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="sr-only"
+                        onChange={handleFileChange}
+                        required
+                      />
+                    </label>
+                    <p className="mt-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    PDF, DOC up to 10MB
+                  </p>
+                </div>
 
-      <DialogFooter className="flex justify-end gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setIsApplyDialogOpen(false)}
-          className="border-gray-300 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg"
-        >
-          Cancel
-        </Button>
-        <Button
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-          type="submit"
-        >
-          {session ? "Submit Application" : "Sign in with Google"}
-        </Button>
-      </DialogFooter>
-    </form>
-  </DialogContent>
-</Dialog>
+                {resumeFile && (
+                  <p className="text-sm text-green-600 mt-2 flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-2 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    File selected: {resumeFile.name}
+                  </p>
+                )}
+              </div>
+            )}
 
+            <DialogFooter className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsApplyDialogOpen(false)}
+                className="border-gray-300 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                type="submit"
+              >
+                {session ? "Submit Application" : "Sign in with Google"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}  
+}

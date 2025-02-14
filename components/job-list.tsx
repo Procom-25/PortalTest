@@ -259,12 +259,15 @@ export function JobList() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="dashboard" className="w-full sm:w-auto">
+            <Button
+              variant="dashboard"
+              className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Job
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="w-[90%] md:w-[500]">
             <DialogHeader>
               <DialogTitle>Add New Job</DialogTitle>
             </DialogHeader>
@@ -295,9 +298,11 @@ export function JobList() {
                     </div>
                   </TableCell>
 
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium ">
                     <div className="flex text-xl justify-center sm:justify-around items-center gap-2">
-                      <span className="font-semibold sm:font-medium text-center sm:text-left text-base text-lg w-full">{job.title}</span>
+                      <span className="pt-4  sm:pt-0 font-semibold text-2xl sm:font-medium text-center sm:text-left sm:text-lg w-full">
+                        {job.title}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell className="flex justify-center sm:justify-end">
@@ -318,7 +323,7 @@ export function JobList() {
                               View Resumes
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="w-[90%] md:w-[500]">
                             <DialogHeader>
                               <DialogTitle>Resumes for {job.title}</DialogTitle>
                             </DialogHeader>
@@ -376,7 +381,7 @@ export function JobList() {
                           <DialogTrigger asChild>
                             <Button variant="dashboard">Edit</Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="w-[90%] md:w-[500]">
                             <DialogHeader>
                               <DialogTitle>
                                 Edit {job.title} Description
@@ -401,7 +406,7 @@ export function JobList() {
                               Delete
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="w-[90%] md:w-[500]">
                             <DialogHeader>
                               <DialogTitle>
                                 Delete the {job.title} job post?
