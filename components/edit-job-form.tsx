@@ -44,14 +44,16 @@ export function EditJobForm({ onSubmit, onClose, job }: EditJobFormProps) {
           required
         />
       </div>
-      <GradientButton
-        gradientFrom="from-[#199DDF]"
-        gradientTo="to-[#145BD5]"
-        hoverGradientFrom="from-[#199DDF]"
-        hoverGradientTo="to-[#145BD5]"
-      >
-        Update Description
-      </GradientButton>
+      <div className="!mt-8">
+        <GradientButton
+          gradientFrom="from-[#000000]"
+          gradientTo="to-[#000000]"
+          hoverGradientFrom="from-[#000000]"
+          hoverGradientTo="to-[#000000]"
+        >
+          Update Description
+        </GradientButton>
+      </div>
     </form>
   )
 }

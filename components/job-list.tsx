@@ -249,7 +249,7 @@ export function JobList() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
-        <div className="space-y-1">
+        <div className="space-y-1 mb-2">
           <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
             Job Listings
           </h2>
@@ -261,9 +261,9 @@ export function JobList() {
           <DialogTrigger asChild>
             <Button
               variant="dashboard"
-              className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white"
+              className="w-full sm:w-auto bg-black hover:bg-red text-white p-3"
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="h-4 w-4" />
               Add Job
             </Button>
           </DialogTrigger>
@@ -308,7 +308,7 @@ export function JobList() {
                   <TableCell className="flex justify-center sm:justify-end">
                     <div className="flex flex-col sm:flex-row justify-end sm:justify-end items-center sm:items-center gap-5 sm:gap-4">
                       <div className="flex items-center">
-                        <span className="ml-3 px-3 py-1 rounded-full mr-4 bg-green-100 text-green-800 text-sm font-medium">
+                        <span className="ml-3 px-3 py-1 rounded-full mr-2 bg-blue-50 text-blue-400 text-sm font-medium">
                           {job.applicantCount} Applicants
                         </span>
                       </div>
@@ -333,7 +333,7 @@ export function JobList() {
                                   {job.resumes.map((resume, idx) => (
                                     <li
                                       key={idx}
-                                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2 hover:bg-gray-50 rounded"
+                                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 hover:bg-gray-50 rounded"
                                     >
                                       <span className="mb-2 sm:mb-0">
                                         {resume.email}
@@ -366,6 +366,7 @@ export function JobList() {
                                     </li>
                                   ))}
                                   <Button
+                                    className="!mt-8"
                                     onClick={() => handleDownloadZip(job)}
                                   >
                                     Download All
@@ -401,7 +402,7 @@ export function JobList() {
                           <DialogTrigger asChild>
                             <Button
                               variant="dashboard"
-                              className="text-[#FF0000] hover:bg-[#FF0000] hover:text-white"
+                              className="text-[#ff7b7b] hover:bg-[#FF0000] hover:text-white"
                             >
                               Delete
                             </Button>
