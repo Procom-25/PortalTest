@@ -187,7 +187,7 @@ export default function JobListings({
   }, [company]);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row overscroll-none bg-gradient-to-r from-white from-60% to-gray-200 to-90%">
+    <div className="min-h-screen max-h-screen flex flex-col lg:flex-row overscroll-none bg-gradient-to-r from-white from-60% to-gray-200 to-90%">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {session ? (
           <>
@@ -244,7 +244,7 @@ export default function JobListings({
               Job Listings
             </h2>
           </div>
-          <ScrollArea className="h-[80vh] pr-4">
+          <ScrollArea className="h-[74vh] pr-4">
             <div className="space-y-3 p-4">
               {jobs ? (
                 jobs.map((job: Job) => (

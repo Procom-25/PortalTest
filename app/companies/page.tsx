@@ -39,7 +39,7 @@ export default function CompanyListings({
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-r from-white from-60% to-gray-200 to-90%">
+    <div className="min-h-screen max-h-screen flex flex-col lg:flex-row bg-gradient-to-r from-white from-60% to-gray-200 to-90%">
       <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto">
         <Image
           src="/comp.jpg"
@@ -69,11 +69,11 @@ export default function CompanyListings({
       <div className="flex-1 p-6 lg:p-8 w-full lg:w-[60%] flex flex-col items-center justify-center">
         <div className="w-full max-w-3xl flex flex-col px-10">
           <div className="mb-4">
-            <h2 className="md:text-7xl text-6xl font-bold tracking-tighter md:text-left text-center mt-10 mb-6">
+            <h2 className="md:text-6xl text-4xl font-bold tracking-tighter md:text-left text-center mt-10 mb-6">
               Companies
             </h2>
           </div>
-          <ScrollArea className="h-[70vh] pr-4">
+          <ScrollArea className="h-[74vh] pr-4">
             <div className="space-y-3 p-0">
               {companies ? (
                 companies.map((company: Company) => (
@@ -81,12 +81,12 @@ export default function CompanyListings({
                     key={company.id}
                     className="rounded-0 border-2 rounded-md border-gray-200 bg-card text-card-foreground
                       hover:bg-secondary hover:cursor-pointer hover:shadow-md 
-                       transition-all duration-300
+                      transition-all duration-300
                       py-3 
                       "
                   >
                     <a href={`/companies/${company.name}`}>
-                      <CardContent className="py-5 text-black text-3xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center">
+                      <CardContent className="py-5 text-black text-2xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center">
                         {company.name}
                       </CardContent>
                     </a>
