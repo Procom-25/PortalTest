@@ -18,13 +18,13 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const company = searchParams.get("company");
-    const jobTitle = searchParams.get("jobTitle");
-
+    const jobTitle = searchParams.get("job_title");
+    console.log(company , jobTitle)
     let query = {};
     if (company && jobTitle) {
       query = { company: company, job: jobTitle };
     }
-
+    console.log(query)
     const applications = await JobApplication.find(query);
     const urls = applications.map((application) => application["cv_url"]);
 
@@ -39,8 +39,7 @@ export async function GET(request) {
 
     // Process each URL and add to ZIP
     for (const url of urls) {
-      // const parsedUrl = new URL(url);
-      // const key = parsedUrl.pathname.slice(1);
+   
 
       const s3Url = new URL(url);
       const key = decodeURIComponent(s3Url.pathname.substring(1)); // Remove leading slash

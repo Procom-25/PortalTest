@@ -229,10 +229,9 @@ export default function JobListings({
             </span>
           </div>
           <div className="space-y-2">
-            <p className="text-xl sm:text-lg text-white animate-fade-in-up text-left p-4">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque
-              perspiciatis beatae maxime exercitationem suscipit nihil sit?
-            </p>
+            {/* <p className="text-xl sm:text-lg text-white animate-fade-in-up text-left p-4">
+              we make it happen !
+            </p> */}
           </div>
         </div>
       </div>
@@ -274,92 +273,114 @@ export default function JobListings({
 
       {/* Job Details Dialog */}
       <Dialog open={!!selectedJob} onOpenChange={() => setSelectedJob(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedJob?.title}</DialogTitle>
-            <DialogDescription>{selectedJob?.description}</DialogDescription>
-          </DialogHeader>
+  <DialogContent className="max-w-sm sm:max-w-md mx-auto rounded-xl p-6">
+    <DialogHeader>
+      <DialogTitle>{selectedJob?.title}</DialogTitle>
+      <DialogDescription>{selectedJob?.description}</DialogDescription>
+    </DialogHeader>
 
-          <DialogFooter>
-            <Button
-              className="hover:bg-green-700 bg-green-600"
-              onClick={() => setIsApplyDialogOpen(true)}
-            >
-              {"Apply Now"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    <DialogFooter className="mt-4">
+      <Button
+        className="hover:bg-green-700 bg-green-600 rounded-lg"
+        onClick={() => setIsApplyDialogOpen(true)}
+      >
+        Apply Now
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
 
       {/* Application Dialog */}
       <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Apply for {selectedJob?.title}</DialogTitle>
-            <DialogDescription>
-              Please fill out the form below to apply for this position.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleApply}>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">
-                  {session ? `Logged in as: ${session.user?.name}` : 'Please sign in to apply'}
-                </Label>
-              </div>
-              {session && (
-                <div className="space-y-2">
-                  <Label htmlFor="resume" className="block text-sm font-medium">
-                    Upload Resume
-                  </Label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md hover:border-primary transition-colors">
-                    <div className="space-y-1 text-center">
-                      <svg className="mx-auto h-12 w-12 text-muted-foreground" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <div className="flex text-sm text-muted-foreground">
-                        <label htmlFor="resume" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/90 focus-within:outline-none">
-                          <span>Upload a file</span>
-                          <Input
-                            id="resume"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            className="sr-only"
-                            onChange={handleFileChange}
-                            required
-                          />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground">PDF, DOC up to 10MB</p>
-                    </div>
-                  </div>
-                  {resumeFile && (
-                    <p className="text-sm text-muted-foreground mt-2 flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      File selected: {resumeFile.name}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsApplyDialogOpen(false)}
+  <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md mx-auto rounded-xl p-5 shadow-lg">
+    <DialogHeader>
+      <DialogTitle className="text-lg font-semibold text-center">
+        Apply for {selectedJob?.title}
+      </DialogTitle>
+      {/* <DialogDescription className="text-sm text-gray-600 text-center">
+        Please fill out the form below to apply for this position.
+      </DialogDescription> */}
+    </DialogHeader>
+
+    <form onSubmit={handleApply} className="space-y-4">
+      <div>
+        <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          {session ? `Logged in as: ${session.user?.name}` : "Please sign in to apply"}
+        </Label>
+      </div>
+
+      {session && (
+        <div className="space-y-3">
+          <Label htmlFor="resume" className="block text-sm font-medium text-gray-700">
+            Upload Resume
+          </Label>
+          <div className="mt-1 flex flex-col items-center justify-center px-4 py-3 border-2 border-dashed rounded-md hover:border-green-600 transition">
+            <svg
+              className="h-10 w-10 text-gray-400 mb-2"
+              stroke="currentColor"
+              fill="none"
+              viewBox="0 0 48 48"
+              aria-hidden="true"
+            >
+              <path
+                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <div className="text-sm text-gray-600">
+              <label
+                htmlFor="resume"
+                className="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus:outline-none"
               >
-                Cancel
-              </Button>
-              <Button className="hover:bg-green-700 bg-green-600" type="submit">
-                {session ? 'Submit Application' : 'Sign in with Google'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+                <span>Upload a file</span>
+                <Input
+                  id="resume"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  className="sr-only"
+                  onChange={handleFileChange}
+                  required
+                />
+              </label>
+              <p className="mt-1">or drag and drop</p>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">PDF, DOC up to 10MB</p>
+          </div>
+
+          {resumeFile && (
+            <p className="text-sm text-green-600 mt-2 flex items-center">
+              <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              File selected: {resumeFile.name}
+            </p>
+          )}
+        </div>
+      )}
+
+      <DialogFooter className="flex justify-end gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setIsApplyDialogOpen(false)}
+          className="border-gray-300 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg"
+        >
+          Cancel
+        </Button>
+        <Button
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+          type="submit"
+        >
+          {session ? "Submit Application" : "Sign in with Google"}
+        </Button>
+      </DialogFooter>
+    </form>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 }  
