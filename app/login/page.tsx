@@ -37,10 +37,10 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden bg-muted lg:block m-4 rounded-xl">
         <Image
-          src="/0021.jpg" 
+          src="/5656.jpg" 
           alt="Image"
           fill 
-          className="object-cover dark:brightness-[0.2] dark:grayscale rounded-xl"
+          className="object-cover contrast-[0.8] dark:brightness-[0.5] dark:grayscale rounded-xl"
         />
       </div>
     </div>

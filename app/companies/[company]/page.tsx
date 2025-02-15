@@ -21,6 +21,7 @@ import { Job } from "@/lib/models/Job";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LogOut } from "lucide-react";
 
 export default function JobListings({
   params,
@@ -191,45 +192,49 @@ export default function JobListings({
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {session ? (
           <>
+            <div className="flex items-center gap-4 ">
             <Button
-              onClick={handleLogout}
-              className="bg-red-700 hover:bg-red-800 text-white"
+              onClick={() => signOut()}
+              className="border bg-white text-black hover:bg-white hover:text-black transition-colors duration-200 p-3 flex items-center gap-2"
             >
-              Logout
+              <LogOut className=" h-4 w-4" />
+              Sign out
             </Button>
+          </div>
           </>
         ) : (
           <Button
             onClick={handleLogin}
-            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 
-                      text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-300"
+            className=" px-6 border bg-white text-black hover:bg-white hover:text-black transition-colors duration-200 p-3 flex items-center gap-2"
           >
             Login
           </Button>
         )}
       </div>
 
-      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none hidden lg:block">
-  <Image
-    src="/comp.jpg"
-    alt="Background Image"
-    layout="fill"
-    objectFit="cover"
-    className="dark:brightness-[0.2] dark:grayscale"
-    priority
-  />
-        <div className="absolute inset-0 bg-black bg-opacity-65 flex flex-col justify-between p-8">
+      <div className="relative bg-muted w-full lg:w-[40%] h-[300px] lg:h-auto overscroll-none hidden m-4 rounded-xl lg:block">
+        <div className="relative w-full h-full">
+          <Image
+            src="/231.png"
+            alt="Background Image"
+            layout="fill"
+            objectFit="cover"
+            className="dark:brightness-[0.2] dark:grayscale rounded-xl"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 rounded-xl pointer-events-none"></div>
+        </div>
+
+        <div className="absolute inset-0 flex flex-col justify-between p-8">
           <div className="flex items-center gap-2 p-4">
-            <div className="w-6 h-8 ">
+            <div className="w-6 h-10">
               <img
                 src="https://www.procom.com.pk/Procom-Logo.png"
                 alt="Company Logo"
                 className="w-full h-full"
               />
             </div>
-            <span className="font-bold text-4xl pl-2 text-white">
-              {company}
-            </span>
+            
           </div>
           <div className="space-y-2">
             {/* <p className="text-xl sm:text-lg text-white animate-fade-in-up text-left p-4">
@@ -238,23 +243,26 @@ export default function JobListings({
           </div>
         </div>
       </div>
-      <div className="flex-1 p-6 lg:p-8 w-full lg:w-[60%] flex flex-col items-center justify-center">
+      <div className="flex-1 p-2 lg:p-2 w-full lg:w-[60%] flex flex-col items-center justify-center">
         <div className="w-full max-w-3xl flex flex-col px-10">
-          <div className="my-8">
-            <h2 className="md:text-6xl text-5xl font-bold tracking-tighter md:text-left text-center">
-              Job Listings
+          <div className="mb-8">
+            <h2 className="md:text-6xl text-4xl font-bold mb-2">
+              {company}
             </h2>
+            <p className="ml-1">              
+              Take the next step in your career by applying for your dream position at {company} today.
+            </p>
           </div>
           <ScrollArea className="h-[74vh] pr-4">
-            <div className="space-y-3 p-4">
+            <div className="space-y-3  ">
               {jobs ? (
                 jobs.map((job: Job) => (
                   <Card
                     key={job.title}
                     className={`rounded-xl border border-gray-300 bg-white/80 backdrop-blur-md shadow-md 
-                      hover:shadow-xl hover:-translate-y-1 hover:bg-white 
+                      hover:bg-gray-100 hover:shadow-lg
                       transition-all duration-300 ease-in-out
-                      px-3 py-2 text-sm font-medium text-gray-800 
+                      px-3 py-2 text-sm font-medium text-gray-800
                       ${
                         appliedJobs.includes(job.title)
                           ? "opacity-50 cursor-not-allowed"
@@ -262,7 +270,7 @@ export default function JobListings({
                       }`}
                     onClick={() => handleJobClick(job)}
                   >
-                    <CardContent className="p-5 text-2xl text-center font-semibold">
+                    <CardContent className="py-5 text-black text-2xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center flex justify-between items-center">
                       <p>{job.title}</p>
                       {appliedJobs.includes(job.title) && (
                         <p className="text-sm text-green-600">
@@ -288,9 +296,9 @@ export default function JobListings({
             <DialogDescription>{selectedJob?.description}</DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-8">
             <Button
-              className="hover:bg-green-700 bg-green-600 rounded-lg"
+              // className="hover:bg-green-700 bg-green-600 rounded-lg"
               onClick={() => setIsApplyDialogOpen(true)}
             >
               Apply Now
@@ -303,7 +311,7 @@ export default function JobListings({
       <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
         <DialogContent className="w-[90%] md:w-[500] rounded-xl p-5 shadow-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-center">
+            <DialogTitle className="text-lg font-semibold ">
               Apply for {selectedJob?.title}
             </DialogTitle>
             {/* <DialogDescription className="text-sm text-gray-600 text-center">
@@ -329,9 +337,9 @@ export default function JobListings({
                   htmlFor="resume"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Upload Resume
+                  
                 </Label>
-                <div className="mt-1 flex flex-col items-center justify-center px-4 py-3 border-2 border-dashed rounded-md hover:border-green-600 transition">
+                <div className="mt-1 flex flex-col items-center justify-center px-4 py-3 border-2 border-dashed rounded-md hover:border-gray-500 transition">
                   <svg
                     className="h-10 w-10 text-gray-400 mb-2"
                     stroke="currentColor"
@@ -346,12 +354,12 @@ export default function JobListings({
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 text-center">
                     <label
                       htmlFor="resume"
-                      className="relative cursor-pointer rounded-md font-medium text-green-600 hover:text-green-500 focus:outline-none"
+                      className="relative cursor-pointer rounded-md font-bold  text-lg focus:outline-none"
                     >
-                      <span>Upload a file</span>
+                      <span>Upload your resume</span>
                       <Input
                         id="resume"
                         type="file"
@@ -389,7 +397,7 @@ export default function JobListings({
               </div>
             )}
 
-            <DialogFooter className="flex justify-end gap-2">
+            <DialogFooter className="flex justify-end gap-2 !mt-8">
               <Button
                 type="button"
                 variant="outline"
@@ -399,7 +407,7 @@ export default function JobListings({
                 Cancel
               </Button>
               <Button
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                // className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
                 type="submit"
               >
                 {session ? "Submit Application" : "Sign in with Google"}
