@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "checkJs": false,
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -35,7 +36,7 @@
     ".next/types/**/*.ts",
     "app/api/auth/[...nextauth].js",
     "app/provider.js"
-  ],
+, "app/api/auth/[...nextauth]/route.js"  ],
   "exclude": [
     "node_modules"
   ]
