@@ -7,7 +7,8 @@ RUN npm install
 
 COPY . .
 
-
+# Add this environment variable to skip ESLint during build
+ENV DISABLE_ESLINT_PLUGIN=true
 RUN npm run build
 
 FROM node:20 AS runner

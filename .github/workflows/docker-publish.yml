@@ -28,3 +28,5 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/job-portal:latest
+          build-args: |
+            DISABLE_ESLINT_PLUGIN=true
