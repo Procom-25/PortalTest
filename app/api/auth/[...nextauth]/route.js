@@ -97,10 +97,12 @@ export const authOptions = {
         secure: true,
         sameSite: "none",
         path: "/",
+        domain: true,
         maxAge: 30 * 24 * 60 * 60, // 30 days
       },
     },
   },
+  useSecureCookies:true,  
 };
 
 const handler = NextAuth(authOptions);
