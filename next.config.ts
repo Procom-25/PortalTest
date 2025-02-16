@@ -4,6 +4,7 @@ const config: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  telemetry: false,
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
