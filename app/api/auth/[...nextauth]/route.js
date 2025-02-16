@@ -94,10 +94,10 @@ export const authOptions = {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: false,
+        sameSite: "lax",
         path: "/",
-        domain: true,
+        domain: undefined,
         maxAge: 30 * 24 * 60 * 60, // 30 days
       },
     },
