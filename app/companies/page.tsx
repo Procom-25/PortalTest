@@ -27,7 +27,6 @@ export default function CompanyListings({
 
       const responseBody = await response.json();
       setCompanies(responseBody["result"]);
-      console.log(responseBody);
     } catch (error) {
       console.error("Error fetching jobs:", error);
     }
@@ -76,7 +75,7 @@ export default function CompanyListings({
               Find and apply to the company that best matches your career aspirations.
             </p>
           </div>
-          <ScrollArea className="h-[74vh] pr-4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+          <ScrollArea className="h-[74vh]   scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
             <div className="space-y-3 p-0">
               {companies ? (
                 companies.map((company: Company) => (
@@ -91,12 +90,11 @@ export default function CompanyListings({
                   >
                     <a href={`/companies/${company.name}`}>
                       <CardContent className="py-5 text-black text-2xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center flex justify-between items-center">
-                        <span>{company.name}</span>
+                        <span className="block text-left overflow-hidden overflow-ellipsis text-ellipsis line-clamp-2">{company.name}</span>
                         {hoveredCardId === company._id && (
                           <div className="flex items-center space-x-2 bg-gray-200 rounded-lg px-3 py-1">
                             <span className="text-sm font-medium text-gray-800">Apply Now</span>
                           </div>
-                        
                         )}
                       </CardContent>
                     </a>
@@ -107,6 +105,7 @@ export default function CompanyListings({
               )}
             </div>
           </ScrollArea>
+
         </div>
       </div>
     </div>

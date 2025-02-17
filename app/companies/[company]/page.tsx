@@ -253,9 +253,9 @@ export default function JobListings({
               Take the next step in your career by applying for your dream position at {company} today.
             </p>
           </div>
-          <ScrollArea className="h-[74vh] pr-4">
-            <div className="space-y-3  ">
-              {jobs ? (
+          <ScrollArea className="h-[74vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+            <div className="space-y-3 p-0">
+              {jobs && jobs.length > 0 ? (
                 jobs.map((job: Job) => (
                   <Card
                     key={job.title}
@@ -273,18 +273,17 @@ export default function JobListings({
                     <CardContent className="py-5 text-black text-2xl sm:text-2xl font-semibold opacity-70 hover:opacity-100 text-center flex justify-between items-center">
                       <p>{job.title}</p>
                       {appliedJobs.includes(job.title) && (
-                        <p className="text-sm text-green-600">
-                          Already Applied
-                        </p>
+                        <p className="text-sm text-green-600">Already Applied</p>
                       )}
                     </CardContent>
                   </Card>
                 ))
               ) : (
-                <LoadingPlaceholder />
+                <p className="text-center text-gray-500">There are no job posts.</p>
               )}
             </div>
           </ScrollArea>
+
         </div>
       </div>
 
