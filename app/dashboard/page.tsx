@@ -24,13 +24,14 @@ export default function Page() {
 
   useEffect(() => {
     if (status === "loading") return;
-    if (!session) {
+    if (!session || session.user?.role !== "company") {
       console.log("No session found, redirecting to login page");
       router.push("/login");
     } else {
-      setIsLoading(false);
+      
+      setIsLoading(false);  
     }
-  }, [session, status, router]);
+  }, [session, status, router]);
 
   if (status === "loading" || isLoading) {
     return (
